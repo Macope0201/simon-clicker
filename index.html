@@ -10,7 +10,6 @@
   :root{
     --bg-deep: #08060F;
     --violet: #8B6CFF;
-    --violet-dim: #5B45A8;
     --pink: #FF5DA2;
     --gold: #FFC24B;
     --mint: #3FE8C4;
@@ -24,8 +23,6 @@
 
   *{ box-sizing: border-box; }
 
-  html{ scroll-behavior: smooth; }
-
   body{
     margin: 0;
     min-height: 100vh;
@@ -36,424 +33,132 @@
     overflow-x: hidden;
   }
 
-  /* Animated aurora backdrop */
-  .aurora{
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-  }
+  .aurora{ position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+  .aurora span{ position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.35; animation: drift 22s ease-in-out infinite; }
+  .aurora span:nth-child(1){ width: 480px; height: 480px; background: var(--violet); top: -160px; left: -100px; animation-duration: 26s; }
+  .aurora span:nth-child(2){ width: 400px; height: 400px; background: var(--pink); top: 20%; right: -140px; animation-duration: 20s; animation-delay: -6s; }
+  .aurora span:nth-child(3){ width: 380px; height: 380px; background: var(--mint); bottom: -140px; left: 15%; animation-duration: 24s; animation-delay: -12s; opacity: 0.2; }
+  @keyframes drift{ 0%,100%{ transform: translate(0,0) scale(1); } 33%{ transform: translate(40px,30px) scale(1.08); } 66%{ transform: translate(-30px,20px) scale(0.95); } }
 
-  .aurora span{
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(70px);
-    opacity: 0.35;
-    animation: drift 22s ease-in-out infinite;
-  }
-
-  .aurora span:nth-child(1){
-    width: 480px; height: 480px;
-    background: var(--violet);
-    top: -160px; left: -100px;
-    animation-duration: 26s;
-  }
-
-  .aurora span:nth-child(2){
-    width: 400px; height: 400px;
-    background: var(--pink);
-    top: 20%; right: -140px;
-    animation-duration: 20s;
-    animation-delay: -6s;
-  }
-
-  .aurora span:nth-child(3){
-    width: 380px; height: 380px;
-    background: var(--mint);
-    bottom: -140px; left: 15%;
-    animation-duration: 24s;
-    animation-delay: -12s;
-    opacity: 0.2;
-  }
-
-  @keyframes drift{
-    0%, 100%{ transform: translate(0, 0) scale(1); }
-    33%{ transform: translate(40px, 30px) scale(1.08); }
-    66%{ transform: translate(-30px, 20px) scale(0.95); }
-  }
-
-  /* Top bar */
   .topbar{
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
     padding: 16px 28px;
     background: rgba(8,6,15,0.7);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(255,255,255,0.06);
   }
 
-  .logo{
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 800;
-    font-size: 1.3rem;
-    letter-spacing: -0.3px;
-  }
-
+  .logo{ font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.3px; }
   .logo span{ color: var(--violet); }
 
-  .topbar-stats{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
+  .topbar-stats{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 
-  .pill{
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    padding: 7px 14px;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
-
-  .pill b{
-    font-family: 'Baloo 2', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-  }
-
+  .pill{ display: flex; align-items: baseline; gap: 5px; background: var(--card); border: 1px solid var(--card-border); padding: 7px 14px; border-radius: 999px; font-size: 0.85rem; white-space: nowrap; }
+  .pill b{ font-family: 'Baloo 2', sans-serif; font-size: 1rem; font-weight: 700; }
   .pill.klick b{ color: var(--gold); }
   .pill.cps b{ color: var(--mint); }
   .pill.power b{ color: var(--pink); }
 
-  /* Layout */
-  .layout{
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 44px 24px 100px;
-  }
+  .layout{ display: flex; flex-direction: column; gap: 40px; max-width: 1100px; margin: 0 auto; padding: 44px 24px 100px; }
 
-  .hero-col{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+  .hero-col{ display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
 
-  .tagline{
-    color: var(--ink-dim);
-    font-size: 1rem;
-    margin: 4px 0 34px;
-    max-width: 340px;
-  }
+  .tagline{ color: var(--ink-dim); font-size: 1rem; margin: 4px 0 30px; max-width: 340px; }
 
-  .click-zone{
-    position: relative;
-    width: 250px;
-    height: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 22px;
-  }
+  .click-zone{ position: relative; width: 250px; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
 
-  .glow{
-    position: absolute;
-    inset: -20px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, var(--violet), var(--pink), var(--gold), var(--mint), var(--violet));
-    filter: blur(26px);
-    opacity: 0.6;
-    animation: spin 9s linear infinite;
-  }
-
+  .glow{ position: absolute; inset: -20px; border-radius: 50%; background: conic-gradient(from 0deg, var(--violet), var(--pink), var(--gold), var(--mint), var(--violet)); filter: blur(26px); opacity: 0.6; animation: spin 9s linear infinite; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
 
   #simonBtn{
-    position: relative;
-    width: 226px;
-    height: 226px;
-    border-radius: 50%;
-    border: none;
+    position: relative; width: 226px; height: 226px; border-radius: 50%; border: none;
     background: linear-gradient(155deg, #2E2456, #150F2B);
-    box-shadow:
-      0 0 0 6px rgba(255,255,255,0.045),
-      0 22px 50px rgba(0,0,0,0.5),
-      inset 0 0 0 1px rgba(255,255,255,0.07);
-    cursor: pointer;
-    padding: 0;
-    overflow: hidden;
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.045), 0 22px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.07);
+    cursor: pointer; padding: 0; overflow: hidden;
     transition: transform 0.08s ease, box-shadow 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
-
-  #simonBtn:hover{
-    box-shadow:
-      0 0 0 6px rgba(255,255,255,0.07),
-      0 22px 60px rgba(139,108,255,0.4),
-      inset 0 0 0 1px rgba(255,255,255,0.09);
-  }
-
+  #simonBtn:hover{ box-shadow: 0 0 0 6px rgba(255,255,255,0.07), 0 22px 60px rgba(139,108,255,0.4), inset 0 0 0 1px rgba(255,255,255,0.09); }
   #simonBtn:active{ transform: scale(0.92); }
 
-  #simonBtn img{
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-
+  #simonBtn img{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 0.25s ease; z-index: 2; }
   #simonBtn img.loaded{ opacity: 1; }
 
-  .placeholder-face{
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 700;
-    font-size: 5rem;
-    color: var(--ink);
-    opacity: 0.85;
-  }
+  .placeholder-face{ position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 5rem; color: var(--ink); opacity: 0.85; z-index: 1; }
 
-  .floater{
-    position: absolute;
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 700;
-    font-size: 1.3rem;
-    pointer-events: none;
-    animation: floatUp 0.9s cubic-bezier(.2,.7,.3,1) forwards;
-  }
+  .floater{ position: absolute; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1.3rem; pointer-events: none; animation: floatUp 0.9s cubic-bezier(.2,.7,.3,1) forwards; z-index: 6; }
+  .floater.crit{ font-size: 1.7rem; }
+  @keyframes floatUp{ from{ opacity: 1; transform: translateY(0) scale(1); } to{ opacity: 0; transform: translateY(-85px) scale(1.2); } }
 
-  @keyframes floatUp{
-    from{ opacity: 1; transform: translateY(0) scale(1); }
-    to{ opacity: 0; transform: translateY(-85px) scale(1.2); }
-  }
+  .particle{ position: absolute; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 5; transition: transform 0.5s ease-out, opacity 0.5s ease-out; }
 
-  .count{
-    font-family: 'Baloo 2', sans-serif;
-    font-size: 3.2rem;
-    font-weight: 800;
-    line-height: 1;
-    background: linear-gradient(90deg, var(--gold), var(--pink));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
+  .rank-badge{ font-size: 0.78rem; color: var(--violet); font-weight: 600; letter-spacing: 0.2px; margin-bottom: 4px; }
 
-  .count-unit{
-    color: var(--ink-dim);
-    font-size: 1rem;
-    font-weight: 500;
-    margin-top: 4px;
-  }
+  .count{ font-family: 'Baloo 2', sans-serif; font-size: 3.2rem; font-weight: 800; line-height: 1; background: linear-gradient(90deg, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .count-unit{ color: var(--ink-dim); font-size: 1rem; font-weight: 500; margin-top: 4px; }
 
-  .sub-stats{
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-  }
+  .sub-stats{ display: flex; gap: 10px; margin-top: 16px; }
 
-  /* Shop */
-  .shop-panel{
-    width: 100%;
-  }
+  .achievements-row{ display: flex; gap: 8px; margin-top: 20px; }
+  .badge{ width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: var(--card); border: 1px solid var(--card-border); filter: grayscale(1); opacity: 0.3; transition: all 0.3s ease; }
+  .badge.unlocked{ filter: none; opacity: 1; background: rgba(255,194,75,0.12); border-color: rgba(255,194,75,0.4); box-shadow: 0 0 14px rgba(255,194,75,0.25); }
 
-  .shop-head{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
+  .prestige-card{ margin-top: 22px; background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px 18px; width: 100%; max-width: 300px; display: none; }
+  .prestige-card.visible{ display: block; }
+  .prestige-card h3{ margin: 0 0 4px; font-family: 'Baloo 2', sans-serif; font-size: 0.95rem; color: var(--gold); }
+  .prestige-card p{ margin: 0 0 10px; font-size: 0.78rem; color: var(--ink-dim); }
+  .prestige-btn{ width: 100%; border: none; border-radius: 10px; padding: 9px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; background: linear-gradient(90deg, var(--violet), var(--pink)); color: white; transition: opacity 0.15s ease, transform 0.1s ease; }
+  .prestige-btn:disabled{ opacity: 0.35; cursor: not-allowed; }
+  .prestige-btn:not(:disabled):active{ transform: scale(0.97); }
 
-  .shop-head h2{
-    font-family: 'Baloo 2', sans-serif;
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0;
-    color: var(--ink);
+  .golden-orb{
+    position: absolute; width: 54px; height: 54px; border-radius: 50%; border: none;
+    background: radial-gradient(circle at 30% 30%, #fff3c4, var(--gold) 60%, #d98f1c);
+    font-size: 1.5rem; cursor: pointer; z-index: 8;
+    box-shadow: 0 0 20px rgba(255,194,75,0.7), 0 0 40px rgba(255,194,75,0.4);
+    animation: pulseOrb 1s ease-in-out infinite;
   }
+  @keyframes pulseOrb{ 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.12); } }
 
-  .tabs{
-    display: flex;
-    gap: 6px;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    padding: 4px;
-    border-radius: 12px;
-  }
+  .shop-panel{ width: 100%; }
+  .shop-head{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+  .shop-head h2{ font-family: 'Baloo 2', sans-serif; font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--ink); }
 
-  .tab{
-    border: none;
-    background: transparent;
-    color: var(--ink-dim);
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 7px 14px;
-    border-radius: 9px;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-  }
+  .head-controls{ display: flex; gap: 8px; flex-wrap: wrap; }
 
-  .tab.active{
-    background: var(--violet);
-    color: white;
-  }
+  .tabs, .qty-tabs{ display: flex; gap: 6px; background: var(--card); border: 1px solid var(--card-border); padding: 4px; border-radius: 12px; }
+  .tab, .qty-tab{ border: none; background: transparent; color: var(--ink-dim); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 7px 14px; border-radius: 9px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
+  .tab.active, .qty-tab.active{ background: var(--violet); color: white; }
 
-  .item{
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
-  }
-
-  .item::before{
-    content: '';
-    position: absolute;
-    inset: 0;
-    width: var(--progress, 0%);
-    background: linear-gradient(90deg, rgba(139,108,255,0.14), rgba(255,93,162,0.1));
-    transition: width 0.2s ease;
-    z-index: 0;
-  }
-
+  .item{ display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; position: relative; overflow: hidden; transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; }
+  .item::before{ content: ''; position: absolute; inset: 0; width: var(--progress, 0%); background: linear-gradient(90deg, rgba(139,108,255,0.14), rgba(255,93,162,0.1)); transition: width 0.2s ease; z-index: 0; }
   .item > *{ position: relative; z-index: 1; }
-
-  .item:hover:not(.disabled){
-    background: var(--card-hover);
-    border-color: rgba(255,255,255,0.18);
-    transform: translateY(-1px);
-  }
-
+  .item:hover:not(.disabled){ background: var(--card-hover); border-color: rgba(255,255,255,0.18); transform: translateY(-1px); }
   .item:active:not(.disabled){ transform: translateY(0) scale(0.99); }
-
   .item.disabled{ cursor: not-allowed; }
   .item.disabled .item-name, .item.disabled .item-cost{ opacity: 0.55; }
 
-  .item-icon{
-    font-size: 1.7rem;
-    width: 44px;
-    height: 44px;
-    border-radius: 11px;
-    background: rgba(255,255,255,0.06);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
+  .item-icon{ font-size: 1.7rem; width: 44px; height: 44px; border-radius: 11px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .item-info{ flex: 1; min-width: 0; }
-
-  .item-name{
-    font-weight: 600;
-    font-size: 0.97rem;
-  }
-
-  .item-desc{
-    color: var(--ink-dim);
-    font-size: 0.8rem;
-    margin-top: 2px;
-  }
-
+  .item-name{ font-weight: 600; font-size: 0.97rem; }
+  .item-desc{ color: var(--ink-dim); font-size: 0.8rem; margin-top: 2px; }
   .item-right{ text-align: right; flex-shrink: 0; }
+  .item-cost{ font-family: 'Baloo 2', sans-serif; font-weight: 700; color: var(--gold); font-size: 1.02rem; }
+  .item-owned{ font-size: 0.72rem; color: var(--ink-dim); margin-top: 2px; }
 
-  .item-cost{
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 700;
-    color: var(--gold);
-    font-size: 1.02rem;
-  }
-
-  .item-owned{
-    font-size: 0.72rem;
-    color: var(--ink-dim);
-    margin-top: 2px;
-  }
-
-  .toast-wrap{
-    position: fixed;
-    top: 76px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    z-index: 30;
-    align-items: center;
-  }
-
-  .toast{
-    background: rgba(18,12,32,0.95);
-    border: 1px solid rgba(255,255,255,0.14);
-    color: var(--ink);
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 999px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-    animation: toastIn 0.3s ease, toastOut 0.4s ease 2.2s forwards;
-  }
-
+  .toast-wrap{ position: fixed; top: 76px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 30; align-items: center; }
+  .toast{ background: rgba(18,12,32,0.95); border: 1px solid rgba(255,255,255,0.14); color: var(--ink); font-size: 0.85rem; font-weight: 500; padding: 10px 18px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,0.45); animation: toastIn 0.3s ease, toastOut 0.4s ease 2.4s forwards; }
   @keyframes toastIn{ from{ opacity: 0; transform: translateY(-10px); } to{ opacity: 1; transform: translateY(0); } }
   @keyframes toastOut{ to{ opacity: 0; transform: translateY(-10px); } }
 
-  footer{
-    margin-top: 28px;
-    color: var(--ink-faint);
-    font-size: 0.78rem;
-    text-align: center;
-  }
-
-  footer code{
-    background: rgba(255,255,255,0.06);
-    padding: 2px 6px;
-    border-radius: 5px;
-  }
+  footer{ margin-top: 28px; color: var(--ink-faint); font-size: 0.78rem; text-align: center; }
+  footer code{ background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 5px; }
 
   @media (min-width: 760px){
-    .layout{
-      flex-direction: row;
-      align-items: flex-start;
-    }
-
-    .hero-col{
-      flex: 0 0 320px;
-      position: sticky;
-      top: 90px;
-    }
-
+    .layout{ flex-direction: row; align-items: flex-start; }
+    .hero-col{ flex: 0 0 320px; position: sticky; top: 90px; }
     .shop-panel{ flex: 1; min-width: 0; }
-
     footer{ text-align: left; }
   }
 </style>
@@ -474,17 +179,18 @@
   <div class="toast-wrap" id="toastWrap"></div>
 
   <div class="layout">
-    <div class="hero-col">
-      <p class="tagline">Klicka på Simon. Bygg din armé. Bli den mäktigaste Simon-klickaren.</p>
+    <div class="hero-col" id="heroCol">
+      <p class="tagline">Klicka på Simon. Bygg din armé. Bli den mäktigaste Simon-klickaren. Håll utkik efter ✨ Blixt-Simon!</p>
 
-      <div class="click-zone">
+      <div class="click-zone" id="clickZone">
         <div class="glow"></div>
         <button id="simonBtn" aria-label="Klicka på Simon">
-          <img id="simonImg" src="simon.png" alt="Simon" onerror="this.classList.remove('loaded'); this.onerror=null;" onload="this.classList.add('loaded');">
+          <img id="simonImg" src="simon.png" alt="Simon" onerror="this.classList.remove('loaded'); this.onerror=null; document.getElementById('placeholderFace').style.display='flex';" onload="this.classList.add('loaded'); document.getElementById('placeholderFace').style.display='none';">
           <span class="placeholder-face" id="placeholderFace">S</span>
         </button>
       </div>
 
+      <div class="rank-badge" id="rankBadge">Nykomling</div>
       <div class="count" id="count">0</div>
       <div class="count-unit">klick totalt</div>
 
@@ -492,14 +198,29 @@
         <div class="pill cps">Auto <b id="cpsStat">0</b>/sek</div>
         <div class="pill power">Per klick <b id="powerStat">1</b></div>
       </div>
+
+      <div class="achievements-row" id="achievementsRow"></div>
+
+      <div class="prestige-card" id="prestigeCard">
+        <h3 id="prestigeTitle">Prestige</h3>
+        <p id="prestigeDesc">Nollställ ditt klick-konto för en permanent kraft-boost.</p>
+        <button class="prestige-btn" id="prestigeBtn">Gör prestige</button>
+      </div>
     </div>
 
     <div class="shop-panel">
       <div class="shop-head">
         <h2>Uppgraderingar</h2>
-        <div class="tabs">
-          <button class="tab active" data-tab="auto">Auto-klick</button>
-          <button class="tab" data-tab="power">Klick-kraft</button>
+        <div class="head-controls">
+          <div class="qty-tabs">
+            <button class="qty-tab active" data-qty="1">x1</button>
+            <button class="qty-tab" data-qty="10">x10</button>
+            <button class="qty-tab" data-qty="25">x25</button>
+          </div>
+          <div class="tabs">
+            <button class="tab active" data-tab="auto">Auto-klick</button>
+            <button class="tab" data-tab="power">Klick-kraft</button>
+          </div>
         </div>
       </div>
 
@@ -513,10 +234,12 @@
 
 <script>
   let clicks = 0;
+  let totalClicksEarned = 0;
   let cps = 0;
   let clickPower = 1;
-  let nextMilestone = 100;
+  let prestige = 0;
   let activeTab = 'auto';
+  let buyQty = 1;
 
   const autoItems = [
     { id: 'sibling', icon: '👦', name: "Simons lillebror",     desc: "Klickar lite då och då",     baseCost: 15,     cps: 0.1, owned: 0 },
@@ -535,17 +258,44 @@
     { id: 'legend',   icon: '👑', name: "Legendarisk Simon",    desc: "Varje klick är episkt",         baseCost: 60000, power: 200, owned: 0 },
   ];
 
+  const achievements = [
+    { threshold: 50,      icon: '👋', title: 'Första klicken',  unlocked: false },
+    { threshold: 500,     icon: '🔥', title: 'Uppvärmning',      unlocked: false },
+    { threshold: 5000,    icon: '⚡', title: 'Klick-feber',       unlocked: false },
+    { threshold: 50000,   icon: '🏆', title: 'Klick-mästare',     unlocked: false },
+    { threshold: 500000,  icon: '🌌', title: 'Legendarisk',       unlocked: false },
+    { threshold: 5000000, icon: '👑', title: 'Simon-gud',         unlocked: false },
+  ];
+
+  const ranks = [
+    { min: 0,       title: 'Nykomling' },
+    { min: 100,     title: 'Klickare' },
+    { min: 1000,    title: 'Simon-fantast' },
+    { min: 10000,   title: 'Klick-mästare' },
+    { min: 100000,  title: 'Legendarisk klickare' },
+    { min: 1000000, title: 'Simon-gud' },
+  ];
+
+  const PRESTIGE_STEP = 10000;
+
   const countEl = document.getElementById('count');
   const topClicks = document.getElementById('topClicks');
   const topCps = document.getElementById('topCps');
   const topPower = document.getElementById('topPower');
   const cpsStat = document.getElementById('cpsStat');
   const powerStat = document.getElementById('powerStat');
+  const rankBadge = document.getElementById('rankBadge');
   const shopList = document.getElementById('shopList');
   const simonBtn = document.getElementById('simonBtn');
-  const clickZone = document.querySelector('.click-zone');
+  const clickZone = document.getElementById('clickZone');
+  const heroCol = document.getElementById('heroCol');
   const toastWrap = document.getElementById('toastWrap');
   const tabs = document.querySelectorAll('.tab');
+  const qtyTabs = document.querySelectorAll('.qty-tab');
+  const achievementsRow = document.getElementById('achievementsRow');
+  const prestigeCard = document.getElementById('prestigeCard');
+  const prestigeDesc = document.getElementById('prestigeDesc');
+  const prestigeBtn = document.getElementById('prestigeBtn');
 
   const floaterColors = ['#FFC24B', '#FF5DA2', '#8B6CFF', '#3FE8C4'];
 
@@ -554,36 +304,93 @@
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       activeTab = tab.dataset.tab;
-      render();
+      renderShop();
     });
   });
 
-  function costFor(item){
-    return Math.ceil(item.baseCost * Math.pow(1.15, item.owned));
+  qtyTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      qtyTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      buyQty = parseInt(tab.dataset.qty, 10);
+      renderShop();
+    });
+  });
+
+  achievements.forEach((a, i) => {
+    const el = document.createElement('div');
+    el.className = 'badge';
+    el.textContent = a.icon;
+    el.title = a.title;
+    el.dataset.index = i;
+    achievementsRow.appendChild(el);
+  });
+
+  function costForQty(item, qty){
+    let total = 0;
+    for(let k = 0; k < qty; k++){
+      total += Math.ceil(item.baseCost * Math.pow(1.15, item.owned + k));
+    }
+    return total;
   }
 
   function formatNum(n){
     if (n < 1000) return Math.floor(n).toString();
     if (n < 1000000) return (n / 1000).toFixed(1) + 'k';
-    return (n / 1000000).toFixed(2) + 'M';
+    if (n < 1000000000) return (n / 1000000).toFixed(2) + 'M';
+    return (n / 1000000000).toFixed(2) + 'B';
   }
 
-  function render(){
-    const list = activeTab === 'auto' ? autoItems : powerItems;
+  function currentRank(){
+    let r = ranks[0];
+    ranks.forEach(x => { if (totalClicksEarned >= x.min) r = x; });
+    return r.title;
+  }
 
+  function recalcStats(){
+    const autoCps = autoItems.reduce((sum, i) => sum + i.owned * i.cps, 0);
+    const basePower = 1 + powerItems.reduce((sum, i) => sum + i.owned * i.power, 0);
+    const multiplier = 1 + prestige * 0.1;
+    cps = autoCps * multiplier;
+    clickPower = basePower * multiplier;
+  }
+
+  function renderStats(){
     countEl.textContent = formatNum(clicks);
     topClicks.textContent = formatNum(clicks);
     topCps.textContent = formatNum(cps);
     topPower.textContent = formatNum(clickPower);
     cpsStat.textContent = formatNum(cps);
     powerStat.textContent = formatNum(clickPower);
+    rankBadge.textContent = currentRank() + (prestige > 0 ? ` · Prestige ${prestige}` : '');
 
+    const potential = Math.floor(totalClicksEarned / PRESTIGE_STEP) - prestige;
+    if (totalClicksEarned >= PRESTIGE_STEP){
+      prestigeCard.classList.add('visible');
+      prestigeDesc.textContent = potential > 0
+        ? `Nollställ klick och uppgraderingar för +${potential * 10}% permanent kraft.`
+        : `Nuvarande bonus: +${prestige * 10}% permanent kraft. Samla fler klick för nästa nivå.`;
+      prestigeBtn.textContent = potential > 0 ? `Gör prestige (+${potential * 10}%)` : 'Ingen ny nivå än';
+      prestigeBtn.disabled = potential <= 0;
+    }
+  }
+
+  function renderAchievements(){
+    achievementsRow.querySelectorAll('.badge').forEach((el, i) => {
+      el.classList.toggle('unlocked', achievements[i].unlocked);
+    });
+  }
+
+  function renderShop(){
+    const list = activeTab === 'auto' ? autoItems : powerItems;
     shopList.innerHTML = '';
     list.forEach(item => {
-      const cost = costFor(item);
+      const cost = costForQty(item, buyQty);
       const canAfford = clicks >= cost;
       const progress = Math.min(100, (clicks / cost) * 100);
-      const gain = activeTab === 'auto' ? `+${item.cps}/sek` : `+${item.power} kraft`;
+      const gain = activeTab === 'auto'
+        ? `+${(item.cps * buyQty).toFixed(1)}/sek`
+        : `+${item.power * buyQty} kraft`;
 
       const row = document.createElement('div');
       row.className = 'item' + (canAfford ? '' : ' disabled');
@@ -591,7 +398,7 @@
       row.innerHTML = `
         <div class="item-icon">${item.icon}</div>
         <div class="item-info">
-          <div class="item-name">${item.name}</div>
+          <div class="item-name">${item.name}${buyQty > 1 ? ' ×' + buyQty : ''}</div>
           <div class="item-desc">${item.desc} · ${gain}</div>
         </div>
         <div class="item-right">
@@ -605,24 +412,44 @@
   }
 
   function buy(item){
-    const cost = costFor(item);
+    const cost = costForQty(item, buyQty);
     if (clicks < cost) return;
     clicks -= cost;
-    item.owned += 1;
-    cps = autoItems.reduce((sum, i) => sum + i.owned * i.cps, 0);
-    clickPower = 1 + powerItems.reduce((sum, i) => sum + i.owned * i.power, 0);
-    render();
+    item.owned += buyQty;
+    recalcStats();
+    renderStats();
+    renderShop();
   }
 
-  function spawnFloater(x, y){
+  function spawnFloater(x, y, amount, crit){
     const f = document.createElement('div');
-    f.className = 'floater';
-    f.textContent = '+' + formatNum(clickPower);
+    f.className = 'floater' + (crit ? ' crit' : '');
+    f.textContent = (crit ? 'KRITISKT +' : '+') + formatNum(amount);
     f.style.left = x + 'px';
     f.style.top = y + 'px';
-    f.style.color = floaterColors[Math.floor(Math.random() * floaterColors.length)];
+    f.style.color = crit ? '#FF5DA2' : floaterColors[Math.floor(Math.random() * floaterColors.length)];
     clickZone.appendChild(f);
     setTimeout(() => f.remove(), 900);
+  }
+
+  function spawnParticles(x, y){
+    for (let i = 0; i < 7; i++){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.style.background = floaterColors[Math.floor(Math.random() * floaterColors.length)];
+      p.style.transform = 'translate(0,0)';
+      p.style.opacity = '1';
+      clickZone.appendChild(p);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 30 + Math.random() * 40;
+      requestAnimationFrame(() => {
+        p.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+        p.style.opacity = '0';
+      });
+      setTimeout(() => p.remove(), 520);
+    }
   }
 
   function showToast(text){
@@ -630,33 +457,103 @@
     t.className = 'toast';
     t.textContent = text;
     toastWrap.appendChild(t);
-    setTimeout(() => t.remove(), 2600);
+    setTimeout(() => t.remove(), 2800);
   }
 
-  function checkMilestone(){
-    if (clicks >= nextMilestone){
-      showToast(`🎉 ${formatNum(nextMilestone)} klick uppnådda!`);
-      nextMilestone *= 5;
-    }
+  function checkAchievements(){
+    achievements.forEach(a => {
+      if (!a.unlocked && totalClicksEarned >= a.threshold){
+        a.unlocked = true;
+        showToast(`🏅 Ny prestation: ${a.title}`);
+        renderAchievements();
+      }
+    });
+  }
+
+  function addClicks(amount){
+    clicks += amount;
+    totalClicksEarned += amount;
+    checkAchievements();
   }
 
   simonBtn.addEventListener('click', (e) => {
-    clicks += clickPower;
+    const crit = Math.random() < 0.08;
+    const gain = clickPower * (crit ? 5 : 1);
+    addClicks(gain);
     const rect = clickZone.getBoundingClientRect();
-    spawnFloater(e.clientX - rect.left, e.clientY - rect.top);
-    checkMilestone();
-    render();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    spawnFloater(x, y, gain, crit);
+    spawnParticles(x, y);
+    renderStats();
+    renderShop();
   });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space'){
+      e.preventDefault();
+      simonBtn.click();
+    }
+  });
+
+  prestigeBtn.addEventListener('click', () => {
+    const potential = Math.floor(totalClicksEarned / PRESTIGE_STEP) - prestige;
+    if (potential <= 0) return;
+    prestige += potential;
+    clicks = 0;
+    autoItems.forEach(i => i.owned = 0);
+    powerItems.forEach(i => i.owned = 0);
+    recalcStats();
+    showToast(`🌟 Prestige! Nu nivå ${prestige} (+${prestige * 10}% permanent)`);
+    renderStats();
+    renderShop();
+  });
+
+  function spawnGolden(){
+    const orb = document.createElement('button');
+    orb.className = 'golden-orb';
+    orb.textContent = '✨';
+    orb.setAttribute('aria-label', 'Blixt-Simon bonus');
+    orb.style.top = (10 + Math.random() * 55) + '%';
+    orb.style.left = (5 + Math.random() * 70) + '%';
+
+    const timeoutId = setTimeout(() => {
+      if (orb.parentNode) orb.remove();
+      scheduleGolden();
+    }, 6000);
+
+    orb.addEventListener('click', () => {
+      clearTimeout(timeoutId);
+      const bonus = Math.max(50, Math.round(cps * 30), Math.round(clickPower * 25));
+      addClicks(bonus);
+      showToast(`✨ Blixt-Simon! +${formatNum(bonus)} klick`);
+      orb.remove();
+      renderStats();
+      renderShop();
+      scheduleGolden();
+    });
+
+    heroCol.appendChild(orb);
+  }
+
+  function scheduleGolden(){
+    const delay = 15000 + Math.random() * 15000;
+    setTimeout(spawnGolden, delay);
+  }
 
   setInterval(() => {
     if (cps > 0){
-      clicks += cps / 10;
-      checkMilestone();
-      render();
+      addClicks(cps / 10);
+      renderStats();
+      renderShop();
     }
   }, 100);
 
-  render();
+  recalcStats();
+  renderStats();
+  renderShop();
+  renderAchievements();
+  scheduleGolden();
 </script>
 
 </body>
