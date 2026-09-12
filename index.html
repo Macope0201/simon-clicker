@@ -64,9 +64,7 @@
 
   .hero-col{ display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
 
-  .tagline{ color: var(--ink-dim); font-size: 1rem; margin: 4px 0 30px; max-width: 340px; }
-
-  .click-zone{ position: relative; width: 250px; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .click-zone{ position: relative; width: 250px; height: 250px; display: flex; align-items: center; justify-content: center; margin: 12px 0 18px; }
 
   .glow{ position: absolute; inset: -20px; border-radius: 50%; background: conic-gradient(from 0deg, var(--violet), var(--pink), var(--gold), var(--mint), var(--violet)); filter: blur(26px); opacity: 0.6; animation: spin 9s linear infinite; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
@@ -102,7 +100,8 @@
 
   .achievements-row{ display: flex; gap: 8px; margin-top: 20px; }
   .badge{ width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: var(--card); border: 1px solid var(--card-border); filter: grayscale(1); opacity: 0.3; transition: all 0.3s ease; }
-  .badge.unlocked{ filter: none; opacity: 1; background: rgba(255,194,75,0.12); border-color: rgba(255,194,75,0.4); box-shadow: 0 0 14px rgba(255,194,75,0.25); }
+  .badge.unlocked{ filter: none; opacity: 1; background: rgba(255,194,75,0.12); border-color: rgba(255,194,75,0.4); box-shadow: 0 0 14px rgba(255,194,75,0.25); animation: badgePop 0.4s ease; }
+  @keyframes badgePop{ 0%{ transform: scale(0.6); } 60%{ transform: scale(1.15); } 100%{ transform: scale(1); } }
 
   .prestige-card{ margin-top: 22px; background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px 18px; width: 100%; max-width: 300px; display: none; }
   .prestige-card.visible{ display: block; }
@@ -135,7 +134,14 @@
   .tab, .qty-tab{ border: none; background: transparent; color: var(--ink-dim); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 7px 14px; border-radius: 9px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
   .tab.active, .qty-tab.active{ background: var(--violet); color: white; }
 
-  .item{ display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; position: relative; overflow: hidden; transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; }
+  .item{ display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--card-border); border-left: 3px solid var(--accent, var(--violet)); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; position: relative; overflow: hidden; transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; animation: itemIn 0.3s ease backwards; }
+  .item:nth-child(1){ animation-delay: 0.02s; }
+  .item:nth-child(2){ animation-delay: 0.05s; }
+  .item:nth-child(3){ animation-delay: 0.08s; }
+  .item:nth-child(4){ animation-delay: 0.11s; }
+  .item:nth-child(5){ animation-delay: 0.14s; }
+  .item:nth-child(6){ animation-delay: 0.17s; }
+  @keyframes itemIn{ from{ opacity: 0; transform: translateY(6px); } to{ opacity: 1; transform: translateY(0); } }
   .item::before{ content: ''; position: absolute; inset: 0; width: var(--progress, 0%); background: linear-gradient(90deg, rgba(139,108,255,0.14), rgba(255,93,162,0.1)); transition: width 0.2s ease; z-index: 0; }
   .item > *{ position: relative; z-index: 1; }
   .item:hover:not(.disabled){ background: var(--card-hover); border-color: rgba(255,255,255,0.18); transform: translateY(-1px); }
@@ -180,8 +186,6 @@
 
   <div class="layout">
     <div class="hero-col" id="heroCol">
-      <p class="tagline">Klicka på Simon. Bygg din armé. Bli den mäktigaste Simon-klickaren. Håll utkik efter en gyllene Golden Bearnaise!</p>
-
       <div class="click-zone" id="clickZone">
         <div class="glow"></div>
         <button id="simonBtn" aria-label="Klicka på Simon">
@@ -377,20 +381,26 @@
     });
   }
 
+  let shopRows = []; // { item, row, costEl, ownedEl }
+
   function renderShop(){
     const list = activeTab === 'auto' ? autoItems : powerItems;
     shopList.innerHTML = '';
-    list.forEach(item => {
+    shopRows = [];
+
+    list.forEach((item, idx) => {
       const cost = costForQty(item, buyQty);
       const canAfford = clicks >= cost;
       const progress = Math.min(100, (clicks / cost) * 100);
       const gain = activeTab === 'auto'
         ? `+${(item.cps * buyQty).toFixed(1)}/sek`
         : `+${item.power * buyQty} kraft`;
+      const accent = ['var(--violet)', 'var(--pink)', 'var(--gold)', 'var(--mint)'][idx % 4];
 
       const row = document.createElement('div');
       row.className = 'item' + (canAfford ? '' : ' disabled');
       row.style.setProperty('--progress', canAfford ? '100%' : progress + '%');
+      row.style.setProperty('--accent', accent);
       row.innerHTML = `
         <div class="item-icon">${item.icon}</div>
         <div class="item-info">
@@ -398,12 +408,30 @@
           <div class="item-desc">${item.desc} · ${gain}</div>
         </div>
         <div class="item-right">
-          <div class="item-cost">${formatNum(cost)}</div>
-          <div class="item-owned">Ägda: ${item.owned}</div>
+          <div class="item-cost"></div>
+          <div class="item-owned"></div>
         </div>
       `;
+      const costEl = row.querySelector('.item-cost');
+      const ownedEl = row.querySelector('.item-owned');
+      costEl.textContent = formatNum(cost);
+      ownedEl.textContent = 'Ägda: ' + item.owned;
+
       row.addEventListener('click', () => buy(item));
       shopList.appendChild(row);
+      shopRows.push({ item, row, costEl, ownedEl });
+    });
+  }
+
+  function updateShopState(){
+    shopRows.forEach(({ item, row, costEl, ownedEl }) => {
+      const cost = costForQty(item, buyQty);
+      const canAfford = clicks >= cost;
+      const progress = Math.min(100, (clicks / cost) * 100);
+      row.classList.toggle('disabled', !canAfford);
+      row.style.setProperty('--progress', canAfford ? '100%' : progress + '%');
+      costEl.textContent = formatNum(cost);
+      ownedEl.textContent = 'Ägda: ' + item.owned;
     });
   }
 
@@ -414,7 +442,7 @@
     item.owned += buyQty;
     recalcStats();
     renderStats();
-    renderShop();
+    updateShopState();
   }
 
   function spawnFloater(x, y, amount, crit){
@@ -482,7 +510,7 @@
     spawnFloater(x, y, gain, crit);
     spawnParticles(x, y);
     renderStats();
-    renderShop();
+    updateShopState();
   });
 
   window.addEventListener('keydown', (e) => {
@@ -502,7 +530,7 @@
     recalcStats();
     showToast(`🌟 Prestige! Nu nivå ${prestige} (+${prestige * 10}% permanent)`);
     renderStats();
-    renderShop();
+    updateShopState();
   });
 
   function spawnGolden(){
@@ -527,7 +555,7 @@
       showToast(`🥇 Golden Bearnaise! +${formatNum(bonus)} klick`);
       orb.remove();
       renderStats();
-      renderShop();
+      updateShopState();
       scheduleGolden();
     });
 
@@ -535,7 +563,7 @@
   }
 
   function scheduleGolden(){
-    const delay = 15000 + Math.random() * 15000;
+    const delay = 240000 + Math.random() * 120000; // 4–6 minuter
     setTimeout(spawnGolden, delay);
   }
 
@@ -543,7 +571,7 @@
     if (cps > 0){
       addClicks(cps / 10);
       renderStats();
-      renderShop();
+      updateShopState();
     }
   }, 100);
 
