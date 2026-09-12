@@ -8,131 +8,229 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-deep: #0E0B1A;
-    --bg-mid: #1A1330;
-    --violet: #7C5CFF;
+    --bg-deep: #08060F;
+    --violet: #8B6CFF;
+    --violet-dim: #5B45A8;
     --pink: #FF5DA2;
     --gold: #FFC24B;
     --mint: #3FE8C4;
-    --ink: #F3EFFF;
-    --ink-dim: #9C93C4;
-    --card: rgba(255,255,255,0.045);
-    --card-border: rgba(255,255,255,0.08);
+    --ink: #F5F2FF;
+    --ink-dim: #9B92C4;
+    --ink-faint: #6E6693;
+    --card: rgba(255,255,255,0.04);
+    --card-hover: rgba(255,255,255,0.075);
+    --card-border: rgba(255,255,255,0.09);
   }
 
   *{ box-sizing: border-box; }
 
+  html{ scroll-behavior: smooth; }
+
   body{
     margin: 0;
     min-height: 100vh;
-    background:
-      radial-gradient(circle at 20% 0%, rgba(124,92,255,0.25), transparent 45%),
-      radial-gradient(circle at 85% 15%, rgba(255,93,162,0.18), transparent 40%),
-      var(--bg-deep);
+    background: var(--bg-deep);
     color: var(--ink);
     font-family: 'Inter', system-ui, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 48px 20px 90px;
+    position: relative;
+    overflow-x: hidden;
   }
 
-  .app{
-    width: 100%;
-    max-width: 460px;
+  /* Animated aurora backdrop */
+  .aurora{
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .aurora span{
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.35;
+    animation: drift 22s ease-in-out infinite;
+  }
+
+  .aurora span:nth-child(1){
+    width: 480px; height: 480px;
+    background: var(--violet);
+    top: -160px; left: -100px;
+    animation-duration: 26s;
+  }
+
+  .aurora span:nth-child(2){
+    width: 400px; height: 400px;
+    background: var(--pink);
+    top: 20%; right: -140px;
+    animation-duration: 20s;
+    animation-delay: -6s;
+  }
+
+  .aurora span:nth-child(3){
+    width: 380px; height: 380px;
+    background: var(--mint);
+    bottom: -140px; left: 15%;
+    animation-duration: 24s;
+    animation-delay: -12s;
+    opacity: 0.2;
+  }
+
+  @keyframes drift{
+    0%, 100%{ transform: translate(0, 0) scale(1); }
+    33%{ transform: translate(40px, 30px) scale(1.08); }
+    66%{ transform: translate(-30px, 20px) scale(0.95); }
+  }
+
+  /* Top bar */
+  .topbar{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 28px;
+    background: rgba(8,6,15,0.7);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .logo{
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.3px;
+  }
+
+  .logo span{ color: var(--violet); }
+
+  .topbar-stats{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .pill{
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .pill b{
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .pill.klick b{ color: var(--gold); }
+  .pill.cps b{ color: var(--mint); }
+  .pill.power b{ color: var(--pink); }
+
+  /* Layout */
+  .layout{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 44px 24px 100px;
+  }
+
+  .hero-col{
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
   }
-
-  .brand{
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 4px;
-  }
-
-  h1{
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 800;
-    font-size: clamp(2rem, 7vw, 2.7rem);
-    margin: 0;
-    letter-spacing: -0.5px;
-    color: var(--ink);
-  }
-
-  h1 span{ color: var(--violet); }
 
   .tagline{
     color: var(--ink-dim);
-    font-size: 0.98rem;
-    margin: 6px 0 38px;
-    text-align: center;
+    font-size: 1rem;
+    margin: 4px 0 34px;
+    max-width: 340px;
   }
 
   .click-zone{
     position: relative;
-    width: 230px;
-    height: 230px;
+    width: 250px;
+    height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 28px;
+    margin-bottom: 22px;
   }
 
   .glow{
     position: absolute;
-    inset: -18px;
+    inset: -20px;
     border-radius: 50%;
     background: conic-gradient(from 0deg, var(--violet), var(--pink), var(--gold), var(--mint), var(--violet));
-    filter: blur(22px);
-    opacity: 0.55;
-    animation: spin 8s linear infinite;
+    filter: blur(26px);
+    opacity: 0.6;
+    animation: spin 9s linear infinite;
   }
 
   @keyframes spin{ to{ transform: rotate(360deg); } }
 
   #simonBtn{
     position: relative;
-    width: 210px;
-    height: 210px;
+    width: 226px;
+    height: 226px;
     border-radius: 50%;
     border: none;
-    background: linear-gradient(155deg, #2A2050, #150F2B);
+    background: linear-gradient(155deg, #2E2456, #150F2B);
     box-shadow:
-      0 0 0 6px rgba(255,255,255,0.04),
-      0 20px 45px rgba(0,0,0,0.45),
-      inset 0 0 0 1px rgba(255,255,255,0.06);
+      0 0 0 6px rgba(255,255,255,0.045),
+      0 22px 50px rgba(0,0,0,0.5),
+      inset 0 0 0 1px rgba(255,255,255,0.07);
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0;
     overflow: hidden;
-    transition: transform 0.09s ease, box-shadow 0.2s ease;
+    transition: transform 0.08s ease, box-shadow 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   #simonBtn:hover{
     box-shadow:
-      0 0 0 6px rgba(255,255,255,0.06),
-      0 20px 55px rgba(124,92,255,0.35),
-      inset 0 0 0 1px rgba(255,255,255,0.08);
+      0 0 0 6px rgba(255,255,255,0.07),
+      0 22px 60px rgba(139,108,255,0.4),
+      inset 0 0 0 1px rgba(255,255,255,0.09);
   }
 
-  #simonBtn:active{ transform: scale(0.93); }
+  #simonBtn:active{ transform: scale(0.92); }
 
   #simonBtn img{
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: none;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
   }
 
-  #simonBtn img.loaded{ display: block; }
+  #simonBtn img.loaded{ opacity: 1; }
 
   .placeholder-face{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: 'Baloo 2', sans-serif;
     font-weight: 700;
-    font-size: 4.6rem;
+    font-size: 5rem;
     color: var(--ink);
     opacity: 0.85;
   }
@@ -148,52 +246,80 @@
 
   @keyframes floatUp{
     from{ opacity: 1; transform: translateY(0) scale(1); }
-    to{ opacity: 0; transform: translateY(-80px) scale(1.15); }
-  }
-
-  .stat-row{
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 40px;
+    to{ opacity: 0; transform: translateY(-85px) scale(1.2); }
   }
 
   .count{
     font-family: 'Baloo 2', sans-serif;
-    font-size: 2.9rem;
+    font-size: 3.2rem;
     font-weight: 800;
-    color: var(--ink);
     line-height: 1;
+    background: linear-gradient(90deg, var(--gold), var(--pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   .count-unit{
     color: var(--ink-dim);
     font-size: 1rem;
     font-weight: 500;
+    margin-top: 4px;
   }
 
-  .cps-pill{
-    background: rgba(63,232,196,0.12);
-    border: 1px solid rgba(63,232,196,0.3);
-    color: var(--mint);
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 6px 14px;
-    border-radius: 999px;
-    white-space: nowrap;
+  .sub-stats{
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
   }
 
-  .shop{
+  /* Shop */
+  .shop-panel{
     width: 100%;
   }
 
-  .shop h2{
+  .shop-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .shop-head h2{
     font-family: 'Baloo 2', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .tabs{
+    display: flex;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    padding: 4px;
+    border-radius: 12px;
+  }
+
+  .tab{
+    border: none;
+    background: transparent;
     color: var(--ink-dim);
-    margin: 0 0 14px;
-    padding-left: 2px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 7px 14px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .tab.active{
+    background: var(--violet);
+    color: white;
   }
 
   .item{
@@ -202,29 +328,43 @@
     gap: 14px;
     background: var(--card);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(6px);
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 10px;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
     transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
   }
 
+  .item::before{
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: var(--progress, 0%);
+    background: linear-gradient(90deg, rgba(139,108,255,0.14), rgba(255,93,162,0.1));
+    transition: width 0.2s ease;
+    z-index: 0;
+  }
+
+  .item > *{ position: relative; z-index: 1; }
+
   .item:hover:not(.disabled){
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(255,255,255,0.16);
+    background: var(--card-hover);
+    border-color: rgba(255,255,255,0.18);
     transform: translateY(-1px);
   }
 
   .item:active:not(.disabled){ transform: translateY(0) scale(0.99); }
 
-  .item.disabled{ opacity: 0.4; cursor: not-allowed; }
+  .item.disabled{ cursor: not-allowed; }
+  .item.disabled .item-name, .item.disabled .item-cost{ opacity: 0.55; }
 
   .item-icon{
-    font-size: 1.6rem;
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
+    font-size: 1.7rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
     background: rgba(255,255,255,0.06);
     display: flex;
     align-items: center;
@@ -236,7 +376,7 @@
 
   .item-name{
     font-weight: 600;
-    font-size: 0.96rem;
+    font-size: 0.97rem;
   }
 
   .item-desc{
@@ -251,7 +391,7 @@
     font-family: 'Baloo 2', sans-serif;
     font-weight: 700;
     color: var(--gold);
-    font-size: 1rem;
+    font-size: 1.02rem;
   }
 
   .item-owned{
@@ -262,25 +402,25 @@
 
   .toast-wrap{
     position: fixed;
-    top: 20px;
+    top: 76px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     gap: 8px;
-    z-index: 10;
+    z-index: 30;
     align-items: center;
   }
 
   .toast{
-    background: rgba(20,14,40,0.95);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(18,12,32,0.95);
+    border: 1px solid rgba(255,255,255,0.14);
     color: var(--ink);
     font-size: 0.85rem;
     font-weight: 500;
     padding: 10px 18px;
     border-radius: 999px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
     animation: toastIn 0.3s ease, toastOut 0.4s ease 2.2s forwards;
   }
 
@@ -288,8 +428,8 @@
   @keyframes toastOut{ to{ opacity: 0; transform: translateY(-10px); } }
 
   footer{
-    margin-top: 44px;
-    color: var(--ink-dim);
+    margin-top: 28px;
+    color: var(--ink-faint);
     font-size: 0.78rem;
     text-align: center;
   }
@@ -299,67 +439,124 @@
     padding: 2px 6px;
     border-radius: 5px;
   }
+
+  @media (min-width: 760px){
+    .layout{
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .hero-col{
+      flex: 0 0 320px;
+      position: sticky;
+      top: 90px;
+    }
+
+    .shop-panel{ flex: 1; min-width: 0; }
+
+    footer{ text-align: left; }
+  }
 </style>
 </head>
 <body>
 
+  <div class="aurora"><span></span><span></span><span></span></div>
+
+  <div class="topbar">
+    <div class="logo">Simon <span>Klicker</span></div>
+    <div class="topbar-stats">
+      <div class="pill klick">Klick <b id="topClicks">0</b></div>
+      <div class="pill cps">/sek <b id="topCps">0</b></div>
+      <div class="pill power">Kraft <b id="topPower">1</b></div>
+    </div>
+  </div>
+
   <div class="toast-wrap" id="toastWrap"></div>
 
-  <div class="app">
-    <div class="brand">
-      <h1>Simon <span>Klicker</span></h1>
-    </div>
-    <p class="tagline">Klicka på Simon. Bygg din armé. Klicka snabbare.</p>
+  <div class="layout">
+    <div class="hero-col">
+      <p class="tagline">Klicka på Simon. Bygg din armé. Bli den mäktigaste Simon-klickaren.</p>
 
-    <div class="click-zone">
-      <div class="glow"></div>
-      <button id="simonBtn" aria-label="Klicka på Simon">
-        <!-- Byt gärna src nedan mot en riktig bild, t.ex. "simon.jpg" -->
-        <img id="simonImg" src="simon.png" alt="Simon" onerror="this.classList.remove('loaded'); this.onerror=null;" onload="this.classList.add('loaded');">
-        <span class="placeholder-face" id="placeholderFace">S</span>
-      </button>
-    </div>
-
-    <div class="stat-row">
-      <div>
-        <span class="count" id="count">0</span>
-        <span class="count-unit"> klick</span>
+      <div class="click-zone">
+        <div class="glow"></div>
+        <button id="simonBtn" aria-label="Klicka på Simon">
+          <img id="simonImg" src="simon.png" alt="Simon" onerror="this.classList.remove('loaded'); this.onerror=null;" onload="this.classList.add('loaded');">
+          <span class="placeholder-face" id="placeholderFace">S</span>
+        </button>
       </div>
-      <div class="cps-pill" id="cps">0 /sek</div>
+
+      <div class="count" id="count">0</div>
+      <div class="count-unit">klick totalt</div>
+
+      <div class="sub-stats">
+        <div class="pill cps">Auto <b id="cpsStat">0</b>/sek</div>
+        <div class="pill power">Per klick <b id="powerStat">1</b></div>
+      </div>
     </div>
 
-    <div class="shop">
-      <h2>Uppgraderingar</h2>
+    <div class="shop-panel">
+      <div class="shop-head">
+        <h2>Uppgraderingar</h2>
+        <div class="tabs">
+          <button class="tab active" data-tab="auto">Auto-klick</button>
+          <button class="tab" data-tab="power">Klick-kraft</button>
+        </div>
+      </div>
+
       <div id="shopList"></div>
-    </div>
 
-    <footer>
-      Lägg en bild med namnet <code>simon.png</code> i samma mapp som denna fil, så visas den automatiskt istället för "S".
-    </footer>
+      <footer>
+        Lägg en bild med namnet <code>simon.png</code> i samma mapp som denna fil, så visas den automatiskt istället för "S".
+      </footer>
+    </div>
   </div>
 
 <script>
   let clicks = 0;
   let cps = 0;
+  let clickPower = 1;
   let nextMilestone = 100;
+  let activeTab = 'auto';
 
-  const items = [
-    { id: 'sibling', icon: '👦', name: "Simons lillebror",    desc: "Klickar lite då och då",   baseCost: 15,     cps: 0.1, owned: 0 },
-    { id: 'squad',   icon: '🧑‍🤝‍🧑', name: "Simons kompisgäng", desc: "Hjälper till att klicka", baseCost: 100,    cps: 1,   owned: 0 },
-    { id: 'clones',  icon: '🧬', name: "Simon-kloner",         desc: "Fler Simon, mer klick",     baseCost: 600,    cps: 6,   owned: 0 },
-    { id: 'factory', icon: '🏭', name: "Klick-fabriken",       desc: "Massproducerar klick",       baseCost: 3500,   cps: 30,  owned: 0 },
-    { id: 'corp',    icon: '🏢', name: "Simon Corp",           desc: "Ett helt företag av Simon",   baseCost: 20000,  cps: 150, owned: 0 },
-    { id: 'galaxy',  icon: '🌌', name: "Simon-galaxen",        desc: "Klickar över hela kosmos",    baseCost: 120000, cps: 800, owned: 0 },
+  const autoItems = [
+    { id: 'sibling', icon: '👦', name: "Simons lillebror",     desc: "Klickar lite då och då",     baseCost: 15,     cps: 0.1, owned: 0 },
+    { id: 'squad',   icon: '🧑‍🤝‍🧑', name: "Simons kompisgäng",  desc: "Hjälper till att klicka",    baseCost: 100,    cps: 1,   owned: 0 },
+    { id: 'clones',  icon: '🧬', name: "Simon-kloner",          desc: "Fler Simon, mer klick",       baseCost: 600,    cps: 6,   owned: 0 },
+    { id: 'factory', icon: '🏭', name: "Klick-fabriken",        desc: "Massproducerar klick",        baseCost: 3500,   cps: 30,  owned: 0 },
+    { id: 'corp',    icon: '🏢', name: "Simon Corp",            desc: "Ett helt företag av Simon",   baseCost: 20000,  cps: 150, owned: 0 },
+    { id: 'galaxy',  icon: '🌌', name: "Simon-galaxen",         desc: "Klickar över hela kosmos",    baseCost: 120000, cps: 800, owned: 0 },
+  ];
+
+  const powerItems = [
+    { id: 'coffee',   icon: '☕', name: "Kaffe åt Simon",       desc: "Piggare Simon, hårdare klick", baseCost: 40,    power: 1, owned: 0 },
+    { id: 'gloves',   icon: '🧤', name: "Klick-handskar",       desc: "Bättre grepp om musen",         baseCost: 250,   power: 3, owned: 0 },
+    { id: 'gym',      icon: '💪', name: "Simon tränar",         desc: "Starkare klick-arm",            baseCost: 1500,  power: 10, owned: 0 },
+    { id: 'energy',   icon: '⚡', name: "Energidryck",          desc: "Extrem klick-energi",           baseCost: 9000,  power: 40, owned: 0 },
+    { id: 'legend',   icon: '👑', name: "Legendarisk Simon",    desc: "Varje klick är episkt",         baseCost: 60000, power: 200, owned: 0 },
   ];
 
   const countEl = document.getElementById('count');
-  const cpsEl = document.getElementById('cps');
+  const topClicks = document.getElementById('topClicks');
+  const topCps = document.getElementById('topCps');
+  const topPower = document.getElementById('topPower');
+  const cpsStat = document.getElementById('cpsStat');
+  const powerStat = document.getElementById('powerStat');
   const shopList = document.getElementById('shopList');
   const simonBtn = document.getElementById('simonBtn');
   const clickZone = document.querySelector('.click-zone');
   const toastWrap = document.getElementById('toastWrap');
+  const tabs = document.querySelectorAll('.tab');
 
-  const floaterColors = ['#FFC24B', '#FF5DA2', '#7C5CFF', '#3FE8C4'];
+  const floaterColors = ['#FFC24B', '#FF5DA2', '#8B6CFF', '#3FE8C4'];
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeTab = tab.dataset.tab;
+      render();
+    });
+  });
 
   function costFor(item){
     return Math.ceil(item.baseCost * Math.pow(1.15, item.owned));
@@ -372,21 +569,30 @@
   }
 
   function render(){
+    const list = activeTab === 'auto' ? autoItems : powerItems;
+
     countEl.textContent = formatNum(clicks);
-    cpsEl.textContent = formatNum(cps) + ' /sek';
+    topClicks.textContent = formatNum(clicks);
+    topCps.textContent = formatNum(cps);
+    topPower.textContent = formatNum(clickPower);
+    cpsStat.textContent = formatNum(cps);
+    powerStat.textContent = formatNum(clickPower);
 
     shopList.innerHTML = '';
-    items.forEach(item => {
+    list.forEach(item => {
       const cost = costFor(item);
       const canAfford = clicks >= cost;
+      const progress = Math.min(100, (clicks / cost) * 100);
+      const gain = activeTab === 'auto' ? `+${item.cps}/sek` : `+${item.power} kraft`;
 
       const row = document.createElement('div');
       row.className = 'item' + (canAfford ? '' : ' disabled');
+      row.style.setProperty('--progress', canAfford ? '100%' : progress + '%');
       row.innerHTML = `
         <div class="item-icon">${item.icon}</div>
         <div class="item-info">
           <div class="item-name">${item.name}</div>
-          <div class="item-desc">${item.desc} · +${item.cps}/sek</div>
+          <div class="item-desc">${item.desc} · ${gain}</div>
         </div>
         <div class="item-right">
           <div class="item-cost">${formatNum(cost)}</div>
@@ -403,14 +609,15 @@
     if (clicks < cost) return;
     clicks -= cost;
     item.owned += 1;
-    cps = items.reduce((sum, i) => sum + i.owned * i.cps, 0);
+    cps = autoItems.reduce((sum, i) => sum + i.owned * i.cps, 0);
+    clickPower = 1 + powerItems.reduce((sum, i) => sum + i.owned * i.power, 0);
     render();
   }
 
   function spawnFloater(x, y){
     const f = document.createElement('div');
     f.className = 'floater';
-    f.textContent = '+1';
+    f.textContent = '+' + formatNum(clickPower);
     f.style.left = x + 'px';
     f.style.top = y + 'px';
     f.style.color = floaterColors[Math.floor(Math.random() * floaterColors.length)];
@@ -434,7 +641,7 @@
   }
 
   simonBtn.addEventListener('click', (e) => {
-    clicks += 1;
+    clicks += clickPower;
     const rect = clickZone.getBoundingClientRect();
     spawnFloater(e.clientX - rect.left, e.clientY - rect.top);
     checkMilestone();
