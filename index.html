@@ -113,11 +113,15 @@
   .prestige-btn:not(:disabled):active{ transform: scale(0.97); }
 
   .golden-orb{
-    position: absolute; width: 54px; height: 54px; border-radius: 50%; border: none;
+    position: absolute; width: 58px; height: 58px; border-radius: 50%; border: none;
+    padding: 0; overflow: hidden;
     background: radial-gradient(circle at 30% 30%, #fff3c4, var(--gold) 60%, #d98f1c);
     font-size: 1.5rem; cursor: pointer; z-index: 8;
     box-shadow: 0 0 20px rgba(255,194,75,0.7), 0 0 40px rgba(255,194,75,0.4);
     animation: pulseOrb 1s ease-in-out infinite;
+  }
+  .golden-orb img{
+    width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;
   }
   @keyframes pulseOrb{ 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.12); } }
 
@@ -152,14 +156,10 @@
   @keyframes toastIn{ from{ opacity: 0; transform: translateY(-10px); } to{ opacity: 1; transform: translateY(0); } }
   @keyframes toastOut{ to{ opacity: 0; transform: translateY(-10px); } }
 
-  footer{ margin-top: 28px; color: var(--ink-faint); font-size: 0.78rem; text-align: center; }
-  footer code{ background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 5px; }
-
   @media (min-width: 760px){
     .layout{ flex-direction: row; align-items: flex-start; }
     .hero-col{ flex: 0 0 320px; position: sticky; top: 90px; }
     .shop-panel{ flex: 1; min-width: 0; }
-    footer{ text-align: left; }
   }
 </style>
 </head>
@@ -180,7 +180,7 @@
 
   <div class="layout">
     <div class="hero-col" id="heroCol">
-      <p class="tagline">Klicka på Simon. Bygg din armé. Bli den mäktigaste Simon-klickaren. Håll utkik efter ✨ Blixt-Simon!</p>
+      <p class="tagline">Klicka på Simon. Bygg din armé. Bli den mäktigaste Simon-klickaren. Håll utkik efter en gyllene Golden Bearnaise!</p>
 
       <div class="click-zone" id="clickZone">
         <div class="glow"></div>
@@ -225,10 +225,6 @@
       </div>
 
       <div id="shopList"></div>
-
-      <footer>
-        Lägg en bild med namnet <code>simon.png</code> i samma mapp som denna fil, så visas den automatiskt istället för "S".
-      </footer>
     </div>
   </div>
 
@@ -512,10 +508,12 @@
   function spawnGolden(){
     const orb = document.createElement('button');
     orb.className = 'golden-orb';
-    orb.textContent = '✨';
-    orb.setAttribute('aria-label', 'Blixt-Simon bonus');
+    orb.setAttribute('aria-label', 'Golden Bearnaise bonus');
     orb.style.top = (10 + Math.random() * 55) + '%';
     orb.style.left = (5 + Math.random() * 70) + '%';
+    orb.innerHTML = `
+      <img src="IMG_3534.jpg" alt="Golden Bearnaise" onerror="this.style.display='none'; this.parentElement.textContent='✨';">
+    `;
 
     const timeoutId = setTimeout(() => {
       if (orb.parentNode) orb.remove();
@@ -526,7 +524,7 @@
       clearTimeout(timeoutId);
       const bonus = Math.max(50, Math.round(cps * 30), Math.round(clickPower * 25));
       addClicks(bonus);
-      showToast(`✨ Blixt-Simon! +${formatNum(bonus)} klick`);
+      showToast(`🥇 Golden Bearnaise! +${formatNum(bonus)} klick`);
       orb.remove();
       renderStats();
       renderShop();
