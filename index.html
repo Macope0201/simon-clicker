@@ -73,7 +73,8 @@
 
   .click-zone{ position: relative; width: 250px; height: 250px; display: flex; align-items: center; justify-content: center; margin: 12px 0 18px; }
 
-  .glow{ position: absolute; inset: -20px; border-radius: 50%; background: conic-gradient(from 0deg, var(--violet), var(--pink), var(--gold), var(--mint), var(--violet)); filter: blur(26px); opacity: 0.6; animation: spin 9s linear infinite; }
+  .glow{ position: absolute; inset: -20px; border-radius: 50%; background: conic-gradient(from 0deg, var(--violet), var(--pink), var(--gold), var(--mint), var(--violet)); filter: blur(26px); opacity: 0.6; animation: spin 9s linear infinite; transition: opacity 0.2s ease; }
+  .glow.blazing{ opacity: 0.95; animation-duration: 2.5s; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
 
   #simonBtn{
@@ -101,6 +102,20 @@
   .rank-badge{ font-size: 0.78rem; color: var(--violet); font-weight: 600; letter-spacing: 0.2px; margin-bottom: 6px; }
   .rank-progress{ width: 150px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
   .rank-progress-fill{ height: 100%; width: 0%; background: linear-gradient(90deg, var(--violet), var(--pink)); transition: width 0.3s ease; border-radius: 999px; }
+
+  .combo-badge{
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--gold);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.15s ease, transform 0.15s cubic-bezier(.34,1.56,.64,1);
+    height: 1.1rem;
+    margin-bottom: 2px;
+  }
+  .combo-badge.active{ opacity: 1; transform: scale(1); }
+  .combo-badge.hot{ color: var(--pink); text-shadow: 0 0 12px rgba(255,93,162,0.6); }
 
   .count{ font-family: 'Baloo 2', sans-serif; font-size: 3.2rem; font-weight: 800; line-height: 1; background: linear-gradient(90deg, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-block; }
   .count.pop{ animation: countPop 0.25s cubic-bezier(.34,1.56,.64,1); }
@@ -307,6 +322,7 @@
 
       <div class="rank-badge" id="rankBadge">Nykomling</div>
       <div class="rank-progress"><div class="rank-progress-fill" id="rankProgressFill"></div></div>
+      <div class="combo-badge" id="comboBadge">🔥 Combo x1</div>
       <div class="count" id="count">0</div>
       <div class="count-unit">klick totalt</div>
 
@@ -390,37 +406,41 @@
   let clickPower = 1;
   let activeTab = 'auto';
   let buyQty = 1;
+  let combo = 0;
+  let comboTimeout = null;
+  const COMBO_WINDOW = 900;
+  const COMBO_MAX = 10;
 
   const autoItems = [
-    { id: 'sibling', icon: '🖱', name: "Klickare",           desc: "Klickar lite då och då",       baseCost: 15,             cps: 0.1,        owned: 0 },
-    { id: 'squad',   icon: '👴', name: "Simon Unc",       desc: "Hjälper till att klicka",      baseCost: 100,            cps: 1,          owned: 0 },
-    { id: 'clones',  icon: '🚜', name: "Simon-Farm",         desc: "Fler Simon, mer klick",         baseCost: 600,            cps: 6,          owned: 0 },
-    { id: 'factory', icon: '💅', name: "Simon Baddie",       desc: "Holy Gyatt",                    baseCost: 3500,           cps: 30,         owned: 0 },
-    { id: 'corp',    icon: '🦸‍♂️', name: "Prime Simon",        desc: "För Mycket Aura",               baseCost: 20000,          cps: 150,        owned: 0 },
-    { id: 'galaxy',  icon: '🌍', name: "Simon world",        desc: "Bästa stället",                 baseCost: 120000,         cps: 800,        owned: 0 },
-    { id: 'sigma',   icon: '🐺', name: "Alpha simon",        desc: "Grindar i tysthet",             baseCost: 700000,         cps: 4000,       owned: 0 },
+    { id: 'sibling', icon: '👦', name: "Klickare",           desc: "Klickar lite då och då",       baseCost: 15,             cps: 0.1,        owned: 0 },
+    { id: 'squad',   icon: '🧑‍🤝‍🧑', name: "Simon Unc",       desc: "Hjälper till att klicka",      baseCost: 100,            cps: 1,          owned: 0 },
+    { id: 'clones',  icon: '🧬', name: "Simon-Farm",         desc: "Fler Simon, mer klick",         baseCost: 600,            cps: 6,          owned: 0 },
+    { id: 'factory', icon: '🏭', name: "Simon Baddie",       desc: "Holy Gyatt",                    baseCost: 3500,           cps: 30,         owned: 0 },
+    { id: 'corp',    icon: '🏢', name: "Prime Simon",        desc: "För Mycket Aura",               baseCost: 20000,          cps: 150,        owned: 0 },
+    { id: 'galaxy',  icon: '🌌', name: "Simon world",        desc: "Bästa stället",                 baseCost: 120000,         cps: 800,        owned: 0 },
+    { id: 'sigma',   icon: '🧠', name: "Alpha simon",        desc: "Grindar i tysthet",             baseCost: 700000,         cps: 4000,       owned: 0 },
     { id: 'rizz',    icon: '😏', name: "Rizz Simon",         desc: "Charmar fram klick",            baseCost: 4000000,        cps: 20000,      owned: 0 },
-    { id: 'ohio',    icon: '👦', name: "Simon",         desc: "Simon",  baseCost: 25000000,       cps: 100000,     owned: 0 },
+    { id: 'ohio',    icon: '🧑', name: "Simon",              desc: "Simon",                         baseCost: 25000000,       cps: 100000,     owned: 0 },
     { id: 'empire',  icon: '🏰', name: "Simon Empire",       desc: "Ett helt imperium av Simon",    baseCost: 150000000,      cps: 500000,     owned: 0 },
     { id: 'multiv',  icon: '🌠', name: "Simon Multiverse",   desc: "Oändligt många Simon",          baseCost: 1000000000,     cps: 2500000,    owned: 0 },
-    { id: 'sim',     icon: '👨‍❤‍💋‍👨', name: "Simon 2",   desc: "Normal Simon dag",baseCost: 6000000000,     cps: 12000000,   owned: 0 },
-    { id: 'quantum', icon: '💨', name: "Elephant Prutt",      desc: "Pruttar i alla dimensioner",    baseCost: 40000000000,    cps: 60000000,   owned: 0 },
-    { id: 'singular',icon: '👱‍♂️', name: "Valter", desc: "...",     baseCost: 250000000000,   cps: 300000000,  owned: 0 },
+    { id: 'sim',     icon: '🎮', name: "Simon 2",            desc: "Normal Simon dag",              baseCost: 6000000000,     cps: 12000000,   owned: 0 },
+    { id: 'quantum', icon: '🐘', name: "Elephant Prutt",     desc: "Pruttar i alla dimensioner",    baseCost: 40000000000,    cps: 60000000,   owned: 0 },
+    { id: 'singular',icon: '🧑', name: "Valter",             desc: "...",                           baseCost: 250000000000,   cps: 300000000,  owned: 0 },
   ];
 
   const powerItems = [
-    { id: 'coffee',   icon: '🍭', name: "Godis Åt Simon",       desc: "Piggare Simon, hårdare klick",   baseCost: 40,           power: 1,        owned: 0 },
+    { id: 'coffee',   icon: '☕', name: "Godis Åt Simon",       desc: "Piggare Simon, hårdare klick",   baseCost: 40,           power: 1,        owned: 0 },
     { id: 'gloves',   icon: '🧤', name: "Badboy Handskar",      desc: "Bättre grepp om musen",           baseCost: 250,          power: 3,        owned: 0 },
     { id: 'gym',      icon: '💪', name: "Ge sixpack",           desc: "Starkare klick-arm",              baseCost: 1500,         power: 10,       owned: 0 },
     { id: 'energy',   icon: '⚡', name: "Vara snäll mot simon", desc: "Extrem klick-energi",             baseCost: 9000,         power: 40,       owned: 0 },
     { id: 'legend',   icon: '👑', name: "Legendarisk Simon",    desc: "Varje klick är episkt",           baseCost: 60000,        power: 200,      owned: 0 },
     { id: 'serum',    icon: '🧪', name: "Simon Rizz-serum",     desc: "100% ren aura i flytande form",   baseCost: 400000,       power: 1000,     owned: 0 },
-    { id: 'elixir',   icon: '🔞', name: "Anmie uwu",    desc: "Farligt Dåligt",     baseCost: 2500000,      power: 5000,     owned: 0 },
+    { id: 'elixir',   icon: '🍅', name: "Anmie uwu",            desc: "Farligt Dåligt",                  baseCost: 2500000,      power: 5000,     owned: 0 },
     { id: 'grind',    icon: '📈', name: "Sigma Grindset",       desc: "Ingen dagar av vila",             baseCost: 15000000,     power: 25000,    owned: 0 },
     { id: 'chad',     icon: '🏋️', name: "Gigachad Simon",       desc: "Maximal klick-kapacitet",         baseCost: 90000000,     power: 120000,   owned: 0 },
     { id: 'aimbot',   icon: '🎯', name: "Simon Hacker",         desc: "Träffar rätt varje gång",         baseCost: 550000000,    power: 600000,   owned: 0 },
-    { id: 'godmode',  icon: '🛡️', name: "Simon bajskorvar ",        desc: "Oövervinnerlig klick-kraft",      baseCost: 3500000000,   power: 3000000,  owned: 0 },
-    { id: 'omega',    icon: '♾️', name: "Real Simon",          desc: "Bortom all fattningsförmåga",     baseCost: 20000000000,  power: 15000000, owned: 0 },
+    { id: 'godmode',  icon: '🛡️', name: "Simon bajskorvar ",    desc: "Oövervinnerlig klick-kraft",      baseCost: 3500000000,   power: 3000000,  owned: 0 },
+    { id: 'omega',    icon: '♾️', name: "Real Simon",           desc: "Bortom all fattningsförmåga",     baseCost: 20000000000,  power: 15000000, owned: 0 },
   ];
 
   const achievements = [
@@ -431,9 +451,9 @@
     { threshold: 500000,       icon: '🌌', title: 'Legendarisk',         unlocked: false },
     { threshold: 5000000,      icon: '👑', title: 'Simon-gud',           unlocked: false },
     { threshold: 50000000,     icon: '🗿', title: 'Sigma-klickare',      unlocked: false },
-    { threshold: 500000000,    icon: '🌀', title: 'Simon-final',    unlocked: false },
+    { threshold: 500000000,    icon: '🌀', title: 'Simon-final',        unlocked: false },
     { threshold: 5000000000,   icon: '🌠', title: 'Multiversal Simon',   unlocked: false },
-    { threshold: 50000000000,  icon: '♾️', title: 'Prime-Simon',      unlocked: false },
+    { threshold: 50000000000,  icon: '♾️', title: 'Prime-Simon',         unlocked: false },
   ];
 
   const ranks = [
@@ -484,6 +504,7 @@
   const powerStat = document.getElementById('powerStat');
   const rankBadge = document.getElementById('rankBadge');
   const rankProgressFill = document.getElementById('rankProgressFill');
+  const comboBadge = document.getElementById('comboBadge');
   const shopList = document.getElementById('shopList');
   const simonBtn = document.getElementById('simonBtn');
   const clickZone = document.getElementById('clickZone');
@@ -717,9 +738,22 @@
     checkAchievements();
   }
 
+  function updateComboUI(){
+    comboBadge.textContent = `🔥 Combo x${(1 + combo * 0.08).toFixed(2)}`;
+    comboBadge.classList.toggle('active', combo >= 1);
+    comboBadge.classList.toggle('hot', combo >= 6);
+    document.querySelector('.glow').classList.toggle('blazing', combo >= 6);
+  }
+
   simonBtn.addEventListener('click', (e) => {
+    combo = Math.min(COMBO_MAX, combo + 1);
+    clearTimeout(comboTimeout);
+    comboTimeout = setTimeout(() => { combo = 0; updateComboUI(); }, COMBO_WINDOW);
+    updateComboUI();
+
+    const comboMultiplier = 1 + combo * 0.08; // upp till +80% vid max combo
     const crit = Math.random() < 0.08;
-    const gain = clickPower * (crit ? 5 : 1);
+    const gain = clickPower * (crit ? 5 : 1) * comboMultiplier;
     addClicks(gain);
     const rect = clickZone.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -887,7 +921,11 @@
   renderStats();
   renderShop();
   renderAchievements();
-  scheduleGolden();
+  updateComboUI();
+
+  // Första Golden Bearnaise kommer snabbt för att haka nya spelare,
+  // därefter följer det vanliga 4–6 minuters-schemat.
+  setTimeout(() => spawnGolden(true), 30000 + Math.random() * 20000);
 
   setInterval(saveGame, 5000);
   window.addEventListener('beforeunload', saveGame);
