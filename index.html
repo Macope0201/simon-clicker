@@ -31,6 +31,13 @@
     font-family: 'Inter', system-ui, sans-serif;
     position: relative;
     overflow-x: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input, textarea{
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   .aurora{ position: fixed; inset: 0; z-index: -1; overflow: hidden; }
@@ -91,7 +98,9 @@
 
   .particle{ position: absolute; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 5; transition: transform 0.5s ease-out, opacity 0.5s ease-out; }
 
-  .rank-badge{ font-size: 0.78rem; color: var(--violet); font-weight: 600; letter-spacing: 0.2px; margin-bottom: 4px; }
+  .rank-badge{ font-size: 0.78rem; color: var(--violet); font-weight: 600; letter-spacing: 0.2px; margin-bottom: 6px; }
+  .rank-progress{ width: 150px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+  .rank-progress-fill{ height: 100%; width: 0%; background: linear-gradient(90deg, var(--violet), var(--pink)); transition: width 0.3s ease; border-radius: 999px; }
 
   .count{ font-family: 'Baloo 2', sans-serif; font-size: 3.2rem; font-weight: 800; line-height: 1; background: linear-gradient(90deg, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-block; }
   .count.pop{ animation: countPop 0.25s cubic-bezier(.34,1.56,.64,1); }
@@ -100,7 +109,7 @@
 
   .sub-stats{ display: flex; gap: 10px; margin-top: 16px; }
 
-  .achievements-row{ display: flex; gap: 8px; margin-top: 20px; }
+  .achievements-row{ display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; justify-content: center; max-width: 280px; }
   .badge{ width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: var(--card); border: 1px solid var(--card-border); filter: grayscale(1); opacity: 0.3; transition: all 0.3s ease; }
   .badge.unlocked{ filter: none; opacity: 1; background: rgba(255,194,75,0.12); border-color: rgba(255,194,75,0.4); box-shadow: 0 0 14px rgba(255,194,75,0.25); animation: badgePop 0.4s ease; }
   @keyframes badgePop{ 0%{ transform: scale(0.6); } 60%{ transform: scale(1.15); } 100%{ transform: scale(1); } }
@@ -157,12 +166,20 @@
   .tab.active, .qty-tab.active{ background: var(--violet); color: white; }
 
   .item{ display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--card-border); border-left: 3px solid var(--accent, var(--violet)); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; position: relative; overflow: hidden; transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; animation: itemIn 0.3s ease backwards; }
-  .item:nth-child(1){ animation-delay: 0.02s; }
-  .item:nth-child(2){ animation-delay: 0.05s; }
-  .item:nth-child(3){ animation-delay: 0.08s; }
-  .item:nth-child(4){ animation-delay: 0.11s; }
-  .item:nth-child(5){ animation-delay: 0.14s; }
-  .item:nth-child(6){ animation-delay: 0.17s; }
+  .item:nth-child(1){ animation-delay: 0.01s; }
+  .item:nth-child(2){ animation-delay: 0.03s; }
+  .item:nth-child(3){ animation-delay: 0.05s; }
+  .item:nth-child(4){ animation-delay: 0.07s; }
+  .item:nth-child(5){ animation-delay: 0.09s; }
+  .item:nth-child(6){ animation-delay: 0.11s; }
+  .item:nth-child(7){ animation-delay: 0.13s; }
+  .item:nth-child(8){ animation-delay: 0.15s; }
+  .item:nth-child(9){ animation-delay: 0.17s; }
+  .item:nth-child(10){ animation-delay: 0.19s; }
+  .item:nth-child(11){ animation-delay: 0.21s; }
+  .item:nth-child(12){ animation-delay: 0.23s; }
+  .item:nth-child(13){ animation-delay: 0.25s; }
+  .item:nth-child(14){ animation-delay: 0.27s; }
   @keyframes itemIn{ from{ opacity: 0; transform: translateY(6px); } to{ opacity: 1; transform: translateY(0); } }
   .item::before{ content: ''; position: absolute; inset: 0; width: var(--progress, 0%); background: linear-gradient(90deg, rgba(139,108,255,0.14), rgba(255,93,162,0.1)); transition: width 0.2s ease; z-index: 0; }
   .item > *{ position: relative; z-index: 1; }
@@ -289,6 +306,7 @@
       </div>
 
       <div class="rank-badge" id="rankBadge">Nykomling</div>
+      <div class="rank-progress"><div class="rank-progress-fill" id="rankProgressFill"></div></div>
       <div class="count" id="count">0</div>
       <div class="count-unit">klick totalt</div>
 
@@ -374,38 +392,61 @@
   let buyQty = 1;
 
   const autoItems = [
-    { id: 'sibling', icon: '👦', name: "Klickare",       desc: "Klickar lite då och då",     baseCost: 15,     cps: 0.1, owned: 0 },
-    { id: 'squad',   icon: '🧑‍🤝‍🧑', name: "Simon Unc",   desc: "Hjälper till att klicka",    baseCost: 100,    cps: 1,   owned: 0 },
-    { id: 'clones',  icon: '🧬', name: "Simon-Farm",     desc: "Fler Simon, mer klick",       baseCost: 600,    cps: 6,   owned: 0 },
-    { id: 'factory', icon: '🏭', name: "Simon Baddie",   desc: "Holy Gyatt",                  baseCost: 3500,   cps: 30,  owned: 0 },
-    { id: 'corp',    icon: '🏢', name: "Prime Simon",    desc: "För Mycket Aura",             baseCost: 20000,  cps: 150, owned: 0 },
-    { id: 'galaxy',  icon: '🌌', name: "Simon world",    desc: "Bästa stället",               baseCost: 120000, cps: 800, owned: 0 },
+    { id: 'sibling', icon: '👦', name: "Klickare",           desc: "Klickar lite då och då",       baseCost: 15,             cps: 0.1,        owned: 0 },
+    { id: 'squad',   icon: '🧑‍🤝‍🧑', name: "Simon Unc",       desc: "Hjälper till att klicka",      baseCost: 100,            cps: 1,          owned: 0 },
+    { id: 'clones',  icon: '🧬', name: "Simon-Farm",         desc: "Fler Simon, mer klick",         baseCost: 600,            cps: 6,          owned: 0 },
+    { id: 'factory', icon: '🏭', name: "Simon Baddie",       desc: "Holy Gyatt",                    baseCost: 3500,           cps: 30,         owned: 0 },
+    { id: 'corp',    icon: '🏢', name: "Prime Simon",        desc: "För Mycket Aura",               baseCost: 20000,          cps: 150,        owned: 0 },
+    { id: 'galaxy',  icon: '🌌', name: "Simon world",        desc: "Bästa stället",                 baseCost: 120000,         cps: 800,        owned: 0 },
+    { id: 'sigma',   icon: '🗿', name: "Simon Sigma",        desc: "Grindar i tysthet",             baseCost: 700000,         cps: 4000,       owned: 0 },
+    { id: 'rizz',    icon: '😏', name: "Rizz Simon",         desc: "Charmar fram klick",            baseCost: 4000000,        cps: 20000,      owned: 0 },
+    { id: 'ohio',    icon: '🌀', name: "Simon Ohio",         desc: "Bara i Ohio är detta normalt",  baseCost: 25000000,       cps: 100000,     owned: 0 },
+    { id: 'empire',  icon: '🏰', name: "Simon Empire",       desc: "Ett helt imperium av Simon",    baseCost: 150000000,      cps: 500000,     owned: 0 },
+    { id: 'multiv',  icon: '🌠', name: "Simon Multiverse",   desc: "Oändligt många Simon",          baseCost: 1000000000,     cps: 2500000,    owned: 0 },
+    { id: 'sim',     icon: '💻', name: "Simon Simulation",   desc: "Vi lever i en Simon-simulering",baseCost: 6000000000,     cps: 12000000,   owned: 0 },
+    { id: 'quantum', icon: '⚛️', name: "Quantum Simon",      desc: "Klickar i alla dimensioner",    baseCost: 40000000000,    cps: 60000000,   owned: 0 },
+    { id: 'singular',icon: '🕳️', name: "Simon Singularitet", desc: "Slutet och början på allt",     baseCost: 250000000000,   cps: 300000000,  owned: 0 },
   ];
 
   const powerItems = [
-    { id: 'coffee',   icon: '☕', name: "Godis Åt Simon",       desc: "Piggare Simon, hårdare klick", baseCost: 40,    power: 1, owned: 0 },
-    { id: 'gloves',   icon: '🧤', name: "Badboy Handskar",      desc: "Bättre grepp om musen",         baseCost: 250,   power: 3, owned: 0 },
-    { id: 'gym',      icon: '💪', name: "Ge sixpack",           desc: "Starkare klick-arm",            baseCost: 1500,  power: 10, owned: 0 },
-    { id: 'energy',   icon: '⚡', name: "Vara snäll mot simon", desc: "Extrem klick-energi",           baseCost: 9000,  power: 40, owned: 0 },
-    { id: 'legend',   icon: '👑', name: "Legendarisk Simon",    desc: "Varje klick är episkt",         baseCost: 60000, power: 200, owned: 0 },
+    { id: 'coffee',   icon: '☕', name: "Godis Åt Simon",       desc: "Piggare Simon, hårdare klick",   baseCost: 40,           power: 1,        owned: 0 },
+    { id: 'gloves',   icon: '🧤', name: "Badboy Handskar",      desc: "Bättre grepp om musen",           baseCost: 250,          power: 3,        owned: 0 },
+    { id: 'gym',      icon: '💪', name: "Ge sixpack",           desc: "Starkare klick-arm",              baseCost: 1500,         power: 10,       owned: 0 },
+    { id: 'energy',   icon: '⚡', name: "Vara snäll mot simon", desc: "Extrem klick-energi",             baseCost: 9000,         power: 40,       owned: 0 },
+    { id: 'legend',   icon: '👑', name: "Legendarisk Simon",    desc: "Varje klick är episkt",           baseCost: 60000,        power: 200,      owned: 0 },
+    { id: 'serum',    icon: '🧪', name: "Simon Rizz-serum",     desc: "100% ren aura i flytande form",   baseCost: 400000,       power: 1000,     owned: 0 },
+    { id: 'elixir',   icon: '🥤', name: "Ohio Kraft-elixir",    desc: "Farligt starkt, farligt bra",     baseCost: 2500000,      power: 5000,     owned: 0 },
+    { id: 'grind',    icon: '📈', name: "Sigma Grindset",       desc: "Ingen dagar av vila",             baseCost: 15000000,     power: 25000,    owned: 0 },
+    { id: 'chad',     icon: '🏋️', name: "Gigachad Simon",       desc: "Maximal klick-kapacitet",         baseCost: 90000000,     power: 120000,   owned: 0 },
+    { id: 'aimbot',   icon: '🎯', name: "Simon Aimbot",         desc: "Träffar rätt varje gång",         baseCost: 550000000,    power: 600000,   owned: 0 },
+    { id: 'godmode',  icon: '🛡️', name: "Simon Godmode",        desc: "Oövervinnerlig klick-kraft",      baseCost: 3500000000,   power: 3000000,  owned: 0 },
+    { id: 'omega',    icon: '♾️', name: "Omega Simon",          desc: "Bortom all fattningsförmåga",     baseCost: 20000000000,  power: 15000000, owned: 0 },
   ];
 
   const achievements = [
-    { threshold: 50,      icon: '👋', title: 'Första klicken',  unlocked: false },
-    { threshold: 500,     icon: '🔥', title: 'Uppvärmning',      unlocked: false },
-    { threshold: 5000,    icon: '⚡', title: 'Klick-feber',       unlocked: false },
-    { threshold: 50000,   icon: '🏆', title: 'Klick-mästare',     unlocked: false },
-    { threshold: 500000,  icon: '🌌', title: 'Legendarisk',       unlocked: false },
-    { threshold: 5000000, icon: '👑', title: 'Simon-gud',         unlocked: false },
+    { threshold: 50,           icon: '👋', title: 'Första klicken',    unlocked: false },
+    { threshold: 500,          icon: '🔥', title: 'Uppvärmning',        unlocked: false },
+    { threshold: 5000,         icon: '⚡', title: 'Klick-feber',         unlocked: false },
+    { threshold: 50000,        icon: '🏆', title: 'Klick-mästare',       unlocked: false },
+    { threshold: 500000,       icon: '🌌', title: 'Legendarisk',         unlocked: false },
+    { threshold: 5000000,      icon: '👑', title: 'Simon-gud',           unlocked: false },
+    { threshold: 50000000,     icon: '🗿', title: 'Sigma-klickare',      unlocked: false },
+    { threshold: 500000000,    icon: '🌀', title: 'Simon Ohio-final',    unlocked: false },
+    { threshold: 5000000000,   icon: '🌠', title: 'Multiversal Simon',   unlocked: false },
+    { threshold: 50000000000,  icon: '♾️', title: 'Omega-klickare',      unlocked: false },
   ];
 
   const ranks = [
-    { min: 0,       title: 'Nykomling' },
-    { min: 100,     title: 'Klickare' },
-    { min: 1000,    title: 'Simon-fantast' },
-    { min: 10000,   title: 'Klick-mästare' },
-    { min: 100000,  title: 'Legendarisk klickare' },
-    { min: 1000000, title: 'Simon-gud' },
+    { min: 0,             title: 'Nykomling' },
+    { min: 100,            title: 'Klickare' },
+    { min: 1000,           title: 'Simon-fantast' },
+    { min: 10000,          title: 'Klick-mästare' },
+    { min: 100000,         title: 'Legendarisk klickare' },
+    { min: 1000000,        title: 'Simon-gud' },
+    { min: 10000000,       title: 'Sigma-legend' },
+    { min: 100000000,      title: 'Simon Overlord' },
+    { min: 1000000000,     title: 'Multiversal härskare' },
+    { min: 10000000000,    title: 'Simon Singularitet' },
   ];
 
   const SAVE_KEY = 'simonKlickerSaveV1';
@@ -442,6 +483,7 @@
   const cpsStat = document.getElementById('cpsStat');
   const powerStat = document.getElementById('powerStat');
   const rankBadge = document.getElementById('rankBadge');
+  const rankProgressFill = document.getElementById('rankProgressFill');
   const shopList = document.getElementById('shopList');
   const simonBtn = document.getElementById('simonBtn');
   const clickZone = document.getElementById('clickZone');
@@ -498,10 +540,24 @@
     return scaled.toFixed(scaled < 10 ? 2 : 1) + suffixes[tier];
   }
 
-  function currentRank(){
-    let r = ranks[0];
-    ranks.forEach(x => { if (totalClicksEarned >= x.min) r = x; });
-    return r.title;
+  function formatRate(n){
+    if (n < 1) return n.toFixed(2);
+    if (n < 1000) return Number.isInteger(n) ? n.toString() : n.toFixed(1);
+    return formatNum(n);
+  }
+
+  function rankInfo(){
+    let idx = 0;
+    for (let i = 0; i < ranks.length; i++){
+      if (totalClicksEarned >= ranks[i].min) idx = i;
+    }
+    const current = ranks[idx];
+    const next = ranks[idx + 1];
+    let progress = 100;
+    if (next){
+      progress = ((totalClicksEarned - current.min) / (next.min - current.min)) * 100;
+    }
+    return { title: current.title, progress: Math.max(0, Math.min(100, progress)) };
   }
 
   function recalcStats(){
@@ -512,11 +568,13 @@
   function renderStats(){
     countEl.textContent = formatNum(clicks);
     topClicks.textContent = formatNum(clicks);
-    topCps.textContent = formatNum(cps);
-    topPower.textContent = formatNum(clickPower);
-    cpsStat.textContent = formatNum(cps);
-    powerStat.textContent = formatNum(clickPower);
-    rankBadge.textContent = currentRank();
+    topCps.textContent = formatRate(cps);
+    topPower.textContent = formatRate(clickPower);
+    cpsStat.textContent = formatRate(cps);
+    powerStat.textContent = formatRate(clickPower);
+    const rank = rankInfo();
+    rankBadge.textContent = rank.title;
+    rankProgressFill.style.width = rank.progress + '%';
   }
 
   function renderAchievements(){
@@ -537,8 +595,8 @@
       const canAfford = clicks >= cost;
       const progress = Math.min(100, (clicks / cost) * 100);
       const gain = activeTab === 'auto'
-        ? `+${(item.cps * buyQty).toFixed(1)}/sek`
-        : `+${item.power * buyQty} kraft`;
+        ? `+${formatRate(item.cps * buyQty)}/sek`
+        : `+${formatRate(item.power * buyQty)} kraft`;
       const accent = ['var(--violet)', 'var(--pink)', 'var(--gold)', 'var(--mint)'][idx % 4];
 
       const row = document.createElement('div');
