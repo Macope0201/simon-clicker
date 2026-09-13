@@ -175,10 +175,20 @@
 
   .head-controls{ display: flex; gap: 8px; flex-wrap: wrap; }
 
-  .tabs, .qty-tabs{ display: flex; gap: 6px; background: var(--card); border: 1px solid var(--card-border); padding: 4px; border-radius: 12px; }
-  .tab, .qty-tab{ border: none; background: transparent; color: var(--ink-dim); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 7px 14px; border-radius: 9px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease, transform 0.15s cubic-bezier(.34,1.56,.64,1); }
-  .tab:active, .qty-tab:active{ transform: scale(0.9); }
-  .tab.active, .qty-tab.active{ background: var(--violet); color: white; }
+  .shop-columns{ display: flex; flex-direction: column; gap: 26px; }
+  .shop-column{ flex: 1; min-width: 0; }
+  .column-title{
+    font-family: 'Baloo 2', sans-serif; font-size: 0.95rem; font-weight: 600;
+    color: var(--ink-dim); margin: 0 0 10px; padding-left: 2px;
+  }
+  @media (min-width: 600px){
+    .shop-columns{ flex-direction: row; }
+  }
+
+  .qty-tabs{ display: flex; gap: 6px; background: var(--card); border: 1px solid var(--card-border); padding: 4px; border-radius: 12px; }
+  .qty-tab{ border: none; background: transparent; color: var(--ink-dim); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 7px 14px; border-radius: 9px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease, transform 0.15s cubic-bezier(.34,1.56,.64,1); }
+  .qty-tab:active{ transform: scale(0.9); }
+  .qty-tab.active{ background: var(--violet); color: white; }
 
   .item{ display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--card-border); border-left: 3px solid var(--accent, var(--violet)); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; position: relative; overflow: hidden; transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; animation: itemIn 0.3s ease backwards; }
   .item:nth-child(1){ animation-delay: 0.01s; }
@@ -343,14 +353,19 @@
             <button class="qty-tab" data-qty="10">x10</button>
             <button class="qty-tab" data-qty="25">x25</button>
           </div>
-          <div class="tabs">
-            <button class="tab active" data-tab="auto">Auto-klick</button>
-            <button class="tab" data-tab="power">Klick-kraft</button>
-          </div>
         </div>
       </div>
 
-      <div id="shopList"></div>
+      <div class="shop-columns">
+        <div class="shop-column">
+          <h3 class="column-title">⚙️ Auto-klick</h3>
+          <div id="shopListAuto"></div>
+        </div>
+        <div class="shop-column">
+          <h3 class="column-title">💥 Klick-kraft</h3>
+          <div id="shopListPower"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -404,7 +419,6 @@
   let totalClicksEarned = 0;
   let cps = 0;
   let clickPower = 1;
-  let activeTab = 'auto';
   let buyQty = 1;
   let combo = 0;
   let comboTimeout = null;
@@ -505,26 +519,17 @@
   const rankBadge = document.getElementById('rankBadge');
   const rankProgressFill = document.getElementById('rankProgressFill');
   const comboBadge = document.getElementById('comboBadge');
-  const shopList = document.getElementById('shopList');
+  const shopListAuto = document.getElementById('shopListAuto');
+  const shopListPower = document.getElementById('shopListPower');
   const simonBtn = document.getElementById('simonBtn');
   const clickZone = document.getElementById('clickZone');
   const heroCol = document.getElementById('heroCol');
   const toastWrap = document.getElementById('toastWrap');
-  const tabs = document.querySelectorAll('.tab');
   const qtyTabs = document.querySelectorAll('.qty-tab');
   const achievementsRow = document.getElementById('achievementsRow');
   const goldenBanner = document.getElementById('goldenBanner');
 
   const floaterColors = ['#FFC24B', '#FF5DA2', '#8B6CFF', '#3FE8C4'];
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeTab = tab.dataset.tab;
-      renderShop();
-    });
-  });
 
   qtyTabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -606,16 +611,13 @@
 
   let shopRows = []; // { item, row, costEl, ownedEl }
 
-  function renderShop(){
-    const list = activeTab === 'auto' ? autoItems : powerItems;
-    shopList.innerHTML = '';
-    shopRows = [];
-
+  function renderColumn(list, container, type){
+    container.innerHTML = '';
     list.forEach((item, idx) => {
       const cost = costForQty(item, buyQty);
       const canAfford = clicks >= cost;
       const progress = Math.min(100, (clicks / cost) * 100);
-      const gain = activeTab === 'auto'
+      const gain = type === 'auto'
         ? `+${formatRate(item.cps * buyQty)}/sek`
         : `+${formatRate(item.power * buyQty)} kraft`;
       const accent = ['var(--violet)', 'var(--pink)', 'var(--gold)', 'var(--mint)'][idx % 4];
@@ -641,9 +643,15 @@
       ownedEl.textContent = 'Ägda: ' + item.owned;
 
       row.addEventListener('click', () => buy(item));
-      shopList.appendChild(row);
+      container.appendChild(row);
       shopRows.push({ item, row, costEl, ownedEl });
     });
+  }
+
+  function renderShop(){
+    shopRows = [];
+    renderColumn(autoItems, shopListAuto, 'auto');
+    renderColumn(powerItems, shopListPower, 'power');
   }
 
   function updateShopState(){
