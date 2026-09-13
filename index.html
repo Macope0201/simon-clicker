@@ -74,11 +74,11 @@
     background: linear-gradient(155deg, #2E2456, #150F2B);
     box-shadow: 0 0 0 6px rgba(255,255,255,0.045), 0 22px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.07);
     cursor: pointer; padding: 0; overflow: hidden;
-    transition: transform 0.08s ease, box-shadow 0.2s ease;
+    transition: transform 0.12s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
-  #simonBtn:hover{ box-shadow: 0 0 0 6px rgba(255,255,255,0.07), 0 22px 60px rgba(139,108,255,0.4), inset 0 0 0 1px rgba(255,255,255,0.09); }
-  #simonBtn:active{ transform: scale(0.92); }
+  #simonBtn:hover{ box-shadow: 0 0 0 6px rgba(255,255,255,0.07), 0 22px 60px rgba(139,108,255,0.4), inset 0 0 0 1px rgba(255,255,255,0.09); transform: scale(1.02); }
+  #simonBtn:active{ transform: scale(0.9); }
 
   #simonBtn img{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 0.25s ease; z-index: 2; }
   #simonBtn img.loaded{ opacity: 1; }
@@ -93,7 +93,9 @@
 
   .rank-badge{ font-size: 0.78rem; color: var(--violet); font-weight: 600; letter-spacing: 0.2px; margin-bottom: 4px; }
 
-  .count{ font-family: 'Baloo 2', sans-serif; font-size: 3.2rem; font-weight: 800; line-height: 1; background: linear-gradient(90deg, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .count{ font-family: 'Baloo 2', sans-serif; font-size: 3.2rem; font-weight: 800; line-height: 1; background: linear-gradient(90deg, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-block; }
+  .count.pop{ animation: countPop 0.25s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes countPop{ 0%{ transform: scale(1); } 50%{ transform: scale(1.15); } 100%{ transform: scale(1); } }
   .count-unit{ color: var(--ink-dim); font-size: 1rem; font-weight: 500; margin-top: 4px; }
 
   .sub-stats{ display: flex; gap: 10px; margin-top: 16px; }
@@ -102,14 +104,6 @@
   .badge{ width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: var(--card); border: 1px solid var(--card-border); filter: grayscale(1); opacity: 0.3; transition: all 0.3s ease; }
   .badge.unlocked{ filter: none; opacity: 1; background: rgba(255,194,75,0.12); border-color: rgba(255,194,75,0.4); box-shadow: 0 0 14px rgba(255,194,75,0.25); animation: badgePop 0.4s ease; }
   @keyframes badgePop{ 0%{ transform: scale(0.6); } 60%{ transform: scale(1.15); } 100%{ transform: scale(1); } }
-
-  .prestige-card{ margin-top: 22px; background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 14px 18px; width: 100%; max-width: 300px; display: none; }
-  .prestige-card.visible{ display: block; }
-  .prestige-card h3{ margin: 0 0 4px; font-family: 'Baloo 2', sans-serif; font-size: 0.95rem; color: var(--gold); }
-  .prestige-card p{ margin: 0 0 10px; font-size: 0.78rem; color: var(--ink-dim); }
-  .prestige-btn{ width: 100%; border: none; border-radius: 10px; padding: 9px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; background: linear-gradient(90deg, var(--violet), var(--pink)); color: white; transition: opacity 0.15s ease, transform 0.1s ease; }
-  .prestige-btn:disabled{ opacity: 0.35; cursor: not-allowed; }
-  .prestige-btn:not(:disabled):active{ transform: scale(0.97); }
 
   .golden-banner{
     position: fixed;
@@ -158,7 +152,8 @@
   .head-controls{ display: flex; gap: 8px; flex-wrap: wrap; }
 
   .tabs, .qty-tabs{ display: flex; gap: 6px; background: var(--card); border: 1px solid var(--card-border); padding: 4px; border-radius: 12px; }
-  .tab, .qty-tab{ border: none; background: transparent; color: var(--ink-dim); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 7px 14px; border-radius: 9px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
+  .tab, .qty-tab{ border: none; background: transparent; color: var(--ink-dim); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 7px 14px; border-radius: 9px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease, transform 0.15s cubic-bezier(.34,1.56,.64,1); }
+  .tab:active, .qty-tab:active{ transform: scale(0.9); }
   .tab.active, .qty-tab.active{ background: var(--violet); color: white; }
 
   .item{ display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--card-border); border-left: 3px solid var(--accent, var(--violet)); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; position: relative; overflow: hidden; transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; animation: itemIn 0.3s ease backwards; }
@@ -243,10 +238,28 @@
     border: none; border-radius: 9px; padding: 9px 14px; font-size: 0.82rem; font-weight: 700;
     font-family: 'Inter', sans-serif; cursor: pointer; white-space: nowrap;
     background: linear-gradient(90deg, var(--violet), var(--pink)); color: white;
-    transition: transform 0.1s ease;
+    transition: transform 0.15s cubic-bezier(.34,1.56,.64,1);
   }
-  .admin-controls button:active{ transform: scale(0.96); }
+  .admin-controls button:active{ transform: scale(0.92); }
   .admin-controls button.danger{ background: linear-gradient(90deg, #E5484D, #B3261E); width: 100%; }
+
+  /* Anpassad markeringsfärg istället för webbläsarens blå */
+  ::selection{ background: rgba(139,108,255,0.4); color: #fff; }
+  ::-moz-selection{ background: rgba(139,108,255,0.4); color: #fff; }
+
+  .screen-flash{
+    position: fixed; inset: 0; z-index: 45; pointer-events: none;
+    background: radial-gradient(circle at center, rgba(255,194,75,0.35), transparent 65%);
+    animation: flashFade 0.5s ease-out forwards;
+  }
+  @keyframes flashFade{ from{ opacity: 1; } to{ opacity: 0; } }
+
+  .item.bought{ animation: boughtPulse 0.4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes boughtPulse{
+    0%{ box-shadow: 0 0 0 0 rgba(255,194,75,0.5); }
+    60%{ box-shadow: 0 0 0 8px rgba(255,194,75,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(255,194,75,0); }
+  }
 </style>
 </head>
 <body>
@@ -285,12 +298,6 @@
       </div>
 
       <div class="achievements-row" id="achievementsRow"></div>
-
-      <div class="prestige-card" id="prestigeCard">
-        <h3 id="prestigeTitle">Prestige</h3>
-        <p id="prestigeDesc">Nollställ ditt klick-konto för en permanent kraft-boost.</p>
-        <button class="prestige-btn" id="prestigeBtn">Gör prestige</button>
-      </div>
     </div>
 
     <div class="shop-panel">
@@ -343,14 +350,6 @@
       </div>
 
       <div class="admin-row">
-        <label>Lägg till prestige-nivåer</label>
-        <div class="admin-controls">
-          <input type="number" id="adminPrestigeInput" min="1" max="1000" value="1">
-          <button id="adminAddPrestigeBtn">Lägg till</button>
-        </div>
-      </div>
-
-      <div class="admin-row">
         <label>Snabbfunktioner</label>
         <div class="admin-controls">
           <button id="adminMaxUpgradesBtn">Maxa uppgraderingar (+100 vardera)</button>
@@ -371,7 +370,6 @@
   let totalClicksEarned = 0;
   let cps = 0;
   let clickPower = 1;
-  let prestige = 0;
   let activeTab = 'auto';
   let buyQty = 1;
 
@@ -410,13 +408,12 @@
     { min: 1000000, title: 'Simon-gud' },
   ];
 
-  const PRESTIGE_STEP = 10000;
   const SAVE_KEY = 'simonKlickerSaveV1';
 
   function saveGame(){
     try{
       const data = {
-        clicks, totalClicksEarned, prestige,
+        clicks, totalClicksEarned,
         autoOwned: autoItems.map(i => i.owned),
         powerOwned: powerItems.map(i => i.owned),
         achievementsUnlocked: achievements.map(a => a.unlocked),
@@ -432,7 +429,6 @@
       const data = JSON.parse(raw);
       clicks = data.clicks || 0;
       totalClicksEarned = data.totalClicksEarned || 0;
-      prestige = data.prestige || 0;
       if (Array.isArray(data.autoOwned)) autoItems.forEach((it, i) => it.owned = data.autoOwned[i] || 0);
       if (Array.isArray(data.powerOwned)) powerItems.forEach((it, i) => it.owned = data.powerOwned[i] || 0);
       if (Array.isArray(data.achievementsUnlocked)) achievements.forEach((a, i) => a.unlocked = !!data.achievementsUnlocked[i]);
@@ -454,9 +450,6 @@
   const tabs = document.querySelectorAll('.tab');
   const qtyTabs = document.querySelectorAll('.qty-tab');
   const achievementsRow = document.getElementById('achievementsRow');
-  const prestigeCard = document.getElementById('prestigeCard');
-  const prestigeDesc = document.getElementById('prestigeDesc');
-  const prestigeBtn = document.getElementById('prestigeBtn');
   const goldenBanner = document.getElementById('goldenBanner');
 
   const floaterColors = ['#FFC24B', '#FF5DA2', '#8B6CFF', '#3FE8C4'];
@@ -512,11 +505,8 @@
   }
 
   function recalcStats(){
-    const autoCps = autoItems.reduce((sum, i) => sum + i.owned * i.cps, 0);
-    const basePower = 1 + powerItems.reduce((sum, i) => sum + i.owned * i.power, 0);
-    const multiplier = 1 + prestige * 0.1;
-    cps = autoCps * multiplier;
-    clickPower = basePower * multiplier;
+    cps = autoItems.reduce((sum, i) => sum + i.owned * i.cps, 0);
+    clickPower = 1 + powerItems.reduce((sum, i) => sum + i.owned * i.power, 0);
   }
 
   function renderStats(){
@@ -526,17 +516,7 @@
     topPower.textContent = formatNum(clickPower);
     cpsStat.textContent = formatNum(cps);
     powerStat.textContent = formatNum(clickPower);
-    rankBadge.textContent = currentRank() + (prestige > 0 ? ` · Prestige ${prestige}` : '');
-
-    const potential = Math.floor(totalClicksEarned / PRESTIGE_STEP) - prestige;
-    if (totalClicksEarned >= PRESTIGE_STEP){
-      prestigeCard.classList.add('visible');
-      prestigeDesc.textContent = potential > 0
-        ? `Nollställ klick och uppgraderingar för +${potential * 10}% permanent kraft.`
-        : `Nuvarande bonus: +${prestige * 10}% permanent kraft. Samla fler klick för nästa nivå.`;
-      prestigeBtn.textContent = potential > 0 ? `Gör prestige (+${potential * 10}%)` : 'Ingen ny nivå än';
-      prestigeBtn.disabled = potential <= 0;
-    }
+    rankBadge.textContent = currentRank();
   }
 
   function renderAchievements(){
@@ -608,6 +588,13 @@
     renderStats();
     updateShopState();
     saveGame();
+
+    const rowData = shopRows.find(r => r.item === item);
+    if (rowData){
+      rowData.row.classList.remove('bought');
+      void rowData.row.offsetWidth; // tvinga omstart av animationen
+      rowData.row.classList.add('bought');
+    }
   }
 
   function spawnFloater(x, y, amount, crit){
@@ -639,6 +626,13 @@
       });
       setTimeout(() => p.remove(), 520);
     }
+  }
+
+  function flashScreen(){
+    const flash = document.createElement('div');
+    flash.className = 'screen-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 500);
   }
 
   function showToast(text){
@@ -676,6 +670,9 @@
     spawnParticles(x, y);
     renderStats();
     updateShopState();
+    countEl.classList.remove('pop');
+    void countEl.offsetWidth;
+    countEl.classList.add('pop');
   });
 
   window.addEventListener('keydown', (e) => {
@@ -683,20 +680,6 @@
       e.preventDefault();
       simonBtn.click();
     }
-  });
-
-  prestigeBtn.addEventListener('click', () => {
-    const potential = Math.floor(totalClicksEarned / PRESTIGE_STEP) - prestige;
-    if (potential <= 0) return;
-    prestige += potential;
-    clicks = 0;
-    autoItems.forEach(i => i.owned = 0);
-    powerItems.forEach(i => i.owned = 0);
-    recalcStats();
-    showToast(`🌟 Prestige! Nu nivå ${prestige} (+${prestige * 10}% permanent)`);
-    renderStats();
-    updateShopState();
-    saveGame();
   });
 
   let activeGoldenCount = 0;
@@ -739,9 +722,11 @@
     }, 10000); // stannar i 10 sekunder
 
     orb.addEventListener('click', () => {
-      const bonus = Math.round(clicks * 0.5);
+      const multiplier = 0.8 + Math.random() * 0.7; // 80%–150%
+      const bonus = Math.round(clicks * multiplier);
       addClicks(bonus);
-      showToast(`🥇 Golden Bearnaise! +${formatNum(bonus)} klick`);
+      showToast(`🥇 Golden Bearnaise! +${formatNum(bonus)} klick (${Math.round(multiplier * 100)}%)`);
+      flashScreen();
       cleanup();
       renderStats();
       updateShopState();
@@ -819,19 +804,6 @@
       setTimeout(() => spawnGolden(false), i * 350);
     }
     showToast(`🔧 Admin: spawnade ${n} Golden Bearnaise`);
-  });
-
-  document.getElementById('adminAddPrestigeBtn').addEventListener('click', () => {
-    const input = document.getElementById('adminPrestigeInput');
-    const n = parseInt(input.value, 10) || 0;
-    if (n > 0){
-      prestige += n;
-      recalcStats();
-      renderStats();
-      updateShopState();
-      saveGame();
-      showToast(`🔧 Admin: +${n} prestige-nivåer`);
-    }
   });
 
   document.getElementById('adminMaxUpgradesBtn').addEventListener('click', () => {
