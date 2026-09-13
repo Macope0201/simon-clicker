@@ -136,12 +136,15 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
-    position: absolute; width: 58px; height: 58px; border-radius: 50%; border: none;
+
+  .golden-orb{
+    position: fixed; width: 58px; height: 58px; border-radius: 50%; border: none;
     padding: 0; overflow: hidden;
     background: radial-gradient(circle at 30% 30%, #fff3c4, var(--gold) 60%, #d98f1c);
-    font-size: 1.5rem; cursor: pointer; z-index: 8;
+    font-size: 1.5rem; cursor: pointer; z-index: 32;
     box-shadow: 0 0 20px rgba(255,194,75,0.7), 0 0 40px rgba(255,194,75,0.4);
     animation: pulseOrb 1s ease-in-out infinite;
+    transition: top 1.2s ease-in-out, left 1.2s ease-in-out;
   }
   .golden-orb img{
     width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;
@@ -191,6 +194,59 @@
     .hero-col{ flex: 0 0 320px; position: sticky; top: 90px; }
     .shop-panel{ flex: 1; min-width: 0; }
   }
+
+  .modal-overlay{
+    position: fixed; inset: 0; background: rgba(5,3,10,0.72); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px;
+  }
+  .modal-overlay.visible{ display: flex; }
+
+  .modal-box{
+    position: relative;
+    background: linear-gradient(160deg, #241a3f, #150F2B);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 28px 26px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+    animation: modalIn 0.2s ease;
+  }
+  .admin-box{ max-width: 380px; }
+  @keyframes modalIn{ from{ opacity: 0; transform: scale(0.95); } to{ opacity: 1; transform: scale(1); } }
+
+  .modal-close{
+    position: absolute; top: 12px; right: 12px; width: 28px; height: 28px;
+    border-radius: 50%; border: 1px solid var(--card-border); background: var(--card);
+    color: var(--ink-dim); cursor: pointer; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover{ color: var(--ink); background: var(--card-hover); }
+
+  .modal-box h3{ font-family: 'Baloo 2', sans-serif; margin: 0 0 16px; font-size: 1.1rem; }
+
+  .code-input{
+    width: 100%; text-align: center; font-family: 'Baloo 2', sans-serif;
+    font-size: 1.8rem; letter-spacing: 10px; padding: 12px; border-radius: 10px;
+    border: 1px solid var(--card-border); background: rgba(0,0,0,0.3); color: var(--ink);
+  }
+  .code-input:focus{ outline: none; border-color: var(--violet); }
+
+  .admin-row{ margin-bottom: 16px; }
+  .admin-row label{ display: block; font-size: 0.78rem; color: var(--ink-dim); margin-bottom: 6px; }
+  .admin-controls{ display: flex; gap: 8px; }
+  .admin-controls input{
+    flex: 1; min-width: 0; padding: 9px 10px; border-radius: 9px;
+    border: 1px solid var(--card-border); background: rgba(0,0,0,0.3); color: var(--ink); font-size: 0.85rem;
+  }
+  .admin-controls button{
+    border: none; border-radius: 9px; padding: 9px 14px; font-size: 0.82rem; font-weight: 700;
+    font-family: 'Inter', sans-serif; cursor: pointer; white-space: nowrap;
+    background: linear-gradient(90deg, var(--violet), var(--pink)); color: white;
+    transition: transform 0.1s ease;
+  }
+  .admin-controls button:active{ transform: scale(0.96); }
+  .admin-controls button.danger{ background: linear-gradient(90deg, #E5484D, #B3261E); width: 100%; }
 </style>
 </head>
 <body>
@@ -198,7 +254,7 @@
   <div class="aurora"><span></span><span></span><span></span></div>
 
   <div class="topbar">
-    <div class="logo">Simon <span>Klicker</span></div>
+    <div class="logo">Simon <span id="secretWord">Klicker</span></div>
     <div class="topbar-stats">
       <div class="pill klick">Klick <b id="topClicks">0</b></div>
       <div class="pill cps">/sek <b id="topCps">0</b></div>
@@ -257,6 +313,59 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="codeModalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="codeModalClose" aria-label="Stäng">✕</button>
+      <h3>Ange kod</h3>
+      <input type="text" id="codeInput" class="code-input" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••">
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="adminModalOverlay">
+    <div class="modal-box admin-box">
+      <button class="modal-close" id="adminModalClose" aria-label="Stäng">✕</button>
+      <h3>🔧 Adminpanel</h3>
+
+      <div class="admin-row">
+        <label>Ge dig själv klick (1 – 1000000000000000000000)</label>
+        <div class="admin-controls">
+          <input type="number" id="adminClicksInput" min="1" max="1000000000000000000000" placeholder="t.ex. 1000">
+          <button id="adminGiveClicksBtn">Ge</button>
+        </div>
+      </div>
+
+      <div class="admin-row">
+        <label>Spawna Golden Bearnaise</label>
+        <div class="admin-controls">
+          <input type="number" id="adminGoldenInput" min="1" max="50" value="1">
+          <button id="adminSpawnGoldenBtn">Spawna</button>
+        </div>
+      </div>
+
+      <div class="admin-row">
+        <label>Lägg till prestige-nivåer</label>
+        <div class="admin-controls">
+          <input type="number" id="adminPrestigeInput" min="1" max="1000" value="1">
+          <button id="adminAddPrestigeBtn">Lägg till</button>
+        </div>
+      </div>
+
+      <div class="admin-row">
+        <label>Snabbfunktioner</label>
+        <div class="admin-controls">
+          <button id="adminMaxUpgradesBtn">Maxa uppgraderingar (+100 vardera)</button>
+        </div>
+      </div>
+
+      <div class="admin-row">
+        <label>Fara</label>
+        <div class="admin-controls">
+          <button id="adminResetBtn" class="danger">Nollställ all sparad data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
   let clicks = 0;
   let totalClicksEarned = 0;
@@ -267,19 +376,19 @@
   let buyQty = 1;
 
   const autoItems = [
-    { id: 'sibling', icon: '🖱️', name: "Klickare",     desc: "Klickar lite då och då",     baseCost: 15,     cps: 0.1, owned: 0 },
-    { id: 'squad',   icon: '👴', name: "Simon Unc",  desc: "Hjälper till att klicka",    baseCost: 100,    cps: 1,   owned: 0 },
-    { id: 'clones',  icon: '🚜', name: "Simon-Farm",          desc: "Fler Simon, mer klick",       baseCost: 600,    cps: 6,   owned: 0 },
-    { id: 'factory', icon: '💅', name: "Simon Baddie",        desc: "Holy Gyatt",        baseCost: 3500,   cps: 30,  owned: 0 },
-    { id: 'corp',    icon: '🦸', name: "Prime Simon",            desc: "För Mycket Aura",   baseCost: 20000,  cps: 150, owned: 0 },
-    { id: 'galaxy',  icon: '🌍', name: "Simon world",         desc: "Bästa stället",    baseCost: 120000, cps: 800, owned: 0 },
+    { id: 'sibling', icon: '👦', name: "Klickare",       desc: "Klickar lite då och då",     baseCost: 15,     cps: 0.1, owned: 0 },
+    { id: 'squad',   icon: '🧑‍🤝‍🧑', name: "Simon Unc",   desc: "Hjälper till att klicka",    baseCost: 100,    cps: 1,   owned: 0 },
+    { id: 'clones',  icon: '🧬', name: "Simon-Farm",     desc: "Fler Simon, mer klick",       baseCost: 600,    cps: 6,   owned: 0 },
+    { id: 'factory', icon: '🏭', name: "Simon Baddie",   desc: "Holy Gyatt",                  baseCost: 3500,   cps: 30,  owned: 0 },
+    { id: 'corp',    icon: '🏢', name: "Prime Simon",    desc: "För Mycket Aura",             baseCost: 20000,  cps: 150, owned: 0 },
+    { id: 'galaxy',  icon: '🌌', name: "Simon world",    desc: "Bästa stället",               baseCost: 120000, cps: 800, owned: 0 },
   ];
 
   const powerItems = [
-    { id: 'coffee',   icon: '🍭', name: "Godis Åt Simon",       desc: "Piggare Simon, hårdare klick", baseCost: 40,    power: 1, owned: 0 },
-    { id: 'gloves',   icon: '🧤', name: "Badboy Handskar",       desc: "Bättre grepp om musen",         baseCost: 250,   power: 3, owned: 0 },
-    { id: 'gym',      icon: '💪', name: "Ge sixpack",         desc: "Starkare klick-arm",            baseCost: 1500,  power: 10, owned: 0 },
-    { id: 'energy',   icon: '⚡', name: "Vara snäll mot simon",          desc: "Extrem klick-energi",           baseCost: 9000,  power: 40, owned: 0 },
+    { id: 'coffee',   icon: '☕', name: "Godis Åt Simon",       desc: "Piggare Simon, hårdare klick", baseCost: 40,    power: 1, owned: 0 },
+    { id: 'gloves',   icon: '🧤', name: "Badboy Handskar",      desc: "Bättre grepp om musen",         baseCost: 250,   power: 3, owned: 0 },
+    { id: 'gym',      icon: '💪', name: "Ge sixpack",           desc: "Starkare klick-arm",            baseCost: 1500,  power: 10, owned: 0 },
+    { id: 'energy',   icon: '⚡', name: "Vara snäll mot simon", desc: "Extrem klick-energi",           baseCost: 9000,  power: 40, owned: 0 },
     { id: 'legend',   icon: '👑', name: "Legendarisk Simon",    desc: "Varje klick är episkt",         baseCost: 60000, power: 200, owned: 0 },
   ];
 
@@ -302,6 +411,33 @@
   ];
 
   const PRESTIGE_STEP = 10000;
+  const SAVE_KEY = 'simonKlickerSaveV1';
+
+  function saveGame(){
+    try{
+      const data = {
+        clicks, totalClicksEarned, prestige,
+        autoOwned: autoItems.map(i => i.owned),
+        powerOwned: powerItems.map(i => i.owned),
+        achievementsUnlocked: achievements.map(a => a.unlocked),
+      };
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    }catch(e){ /* localStorage kan vara blockerat, ignorera tyst */ }
+  }
+
+  function loadGame(){
+    try{
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      clicks = data.clicks || 0;
+      totalClicksEarned = data.totalClicksEarned || 0;
+      prestige = data.prestige || 0;
+      if (Array.isArray(data.autoOwned)) autoItems.forEach((it, i) => it.owned = data.autoOwned[i] || 0);
+      if (Array.isArray(data.powerOwned)) powerItems.forEach((it, i) => it.owned = data.powerOwned[i] || 0);
+      if (Array.isArray(data.achievementsUnlocked)) achievements.forEach((a, i) => a.unlocked = !!data.achievementsUnlocked[i]);
+    }catch(e){ /* korrupt data, kör med tomt sparfält */ }
+  }
 
   const countEl = document.getElementById('count');
   const topClicks = document.getElementById('topClicks');
@@ -362,9 +498,11 @@
 
   function formatNum(n){
     if (n < 1000) return Math.floor(n).toString();
-    if (n < 1000000) return (n / 1000).toFixed(1) + 'k';
-    if (n < 1000000000) return (n / 1000000).toFixed(2) + 'M';
-    return (n / 1000000000).toFixed(2) + 'B';
+    const suffixes = ['', 'k', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc'];
+    let tier = Math.floor(Math.log10(n) / 3);
+    tier = Math.min(tier, suffixes.length - 1);
+    const scaled = n / Math.pow(1000, tier);
+    return scaled.toFixed(scaled < 10 ? 2 : 1) + suffixes[tier];
   }
 
   function currentRank(){
@@ -469,6 +607,7 @@
     recalcStats();
     renderStats();
     updateShopState();
+    saveGame();
   }
 
   function spawnFloater(x, y, amount, crit){
@@ -557,44 +696,63 @@
     showToast(`🌟 Prestige! Nu nivå ${prestige} (+${prestige * 10}% permanent)`);
     renderStats();
     updateShopState();
+    saveGame();
   });
 
-  function spawnGolden(){
+  let activeGoldenCount = 0;
+
+  function spawnGolden(isAuto){
+    activeGoldenCount++;
+    goldenBanner.classList.add('visible');
+
     const orb = document.createElement('button');
     orb.className = 'golden-orb';
     orb.setAttribute('aria-label', 'Golden Bearnaise bonus');
-    orb.style.top = (10 + Math.random() * 55) + '%';
-    orb.style.left = (5 + Math.random() * 70) + '%';
     orb.innerHTML = `
       <img src="IMG_3534.jpg" alt="Golden Bearnaise" onerror="this.style.display='none'; this.parentElement.textContent='✨';">
     `;
+    document.body.appendChild(orb);
 
-    goldenBanner.classList.add('visible');
+    function moveOrb(){
+      const maxLeft = window.innerWidth - 74;
+      const maxTop = window.innerHeight - 74;
+      orb.style.left = (10 + Math.random() * Math.max(10, maxLeft - 10)) + 'px';
+      orb.style.top = (80 + Math.random() * Math.max(10, maxTop - 80)) + 'px';
+    }
+    moveOrb();
+    const moveInterval = setInterval(moveOrb, 1300); // medium fart runt skärmen
 
-    const timeoutId = setTimeout(() => {
+    let cleaned = false;
+    function cleanup(){
+      if (cleaned) return;
+      cleaned = true;
+      clearInterval(moveInterval);
+      clearTimeout(lifeTimeout);
       if (orb.parentNode) orb.remove();
-      goldenBanner.classList.remove('visible');
-      scheduleGolden();
-    }, 6000);
+      activeGoldenCount = Math.max(0, activeGoldenCount - 1);
+      if (activeGoldenCount === 0) goldenBanner.classList.remove('visible');
+    }
+
+    const lifeTimeout = setTimeout(() => {
+      cleanup();
+      if (isAuto) scheduleGolden();
+    }, 10000); // stannar i 10 sekunder
 
     orb.addEventListener('click', () => {
-      clearTimeout(timeoutId);
       const bonus = Math.round(clicks * 0.5);
       addClicks(bonus);
       showToast(`🥇 Golden Bearnaise! +${formatNum(bonus)} klick`);
-      orb.remove();
-      goldenBanner.classList.remove('visible');
+      cleanup();
       renderStats();
       updateShopState();
-      scheduleGolden();
+      saveGame();
+      if (isAuto) scheduleGolden();
     });
-
-    heroCol.appendChild(orb);
   }
 
   function scheduleGolden(){
     const delay = 240000 + Math.random() * 120000; // 4–6 minuter
-    setTimeout(spawnGolden, delay);
+    setTimeout(() => spawnGolden(true), delay);
   }
 
   setInterval(() => {
@@ -605,11 +763,104 @@
     }
   }, 100);
 
+  // --- Hemlig admin-åtkomst ---
+  const secretWord = document.getElementById('secretWord');
+  const codeModalOverlay = document.getElementById('codeModalOverlay');
+  const codeModalClose = document.getElementById('codeModalClose');
+  const codeInput = document.getElementById('codeInput');
+  const adminModalOverlay = document.getElementById('adminModalOverlay');
+  const adminModalClose = document.getElementById('adminModalClose');
+
+  function openCodeModal(){
+    codeInput.value = '';
+    codeModalOverlay.classList.add('visible');
+    setTimeout(() => codeInput.focus(), 50);
+  }
+  function closeCodeModal(){ codeModalOverlay.classList.remove('visible'); }
+  function closeAdminModal(){ adminModalOverlay.classList.remove('visible'); }
+
+  secretWord.addEventListener('click', openCodeModal);
+  codeModalClose.addEventListener('click', closeCodeModal);
+  adminModalClose.addEventListener('click', closeAdminModal);
+
+  codeModalOverlay.addEventListener('click', (e) => { if (e.target === codeModalOverlay) closeCodeModal(); });
+  adminModalOverlay.addEventListener('click', (e) => { if (e.target === adminModalOverlay) closeAdminModal(); });
+
+  codeInput.addEventListener('input', () => {
+    codeInput.value = codeInput.value.replace(/[^0-9]/g, '');
+    if (codeInput.value.length === 4){
+      if (codeInput.value === '2012'){
+        closeCodeModal();
+        adminModalOverlay.classList.add('visible');
+      }
+      codeInput.value = '';
+    }
+  });
+
+  // --- Adminpanelens funktioner ---
+  document.getElementById('adminGiveClicksBtn').addEventListener('click', () => {
+    const input = document.getElementById('adminClicksInput');
+    const val = parseFloat(input.value);
+    if (!isNaN(val) && val > 0){
+      addClicks(val);
+      renderStats();
+      updateShopState();
+      saveGame();
+      showToast(`🔧 Admin: +${formatNum(val)} klick`);
+      input.value = '';
+    }
+  });
+
+  document.getElementById('adminSpawnGoldenBtn').addEventListener('click', () => {
+    const input = document.getElementById('adminGoldenInput');
+    let n = parseInt(input.value, 10) || 1;
+    n = Math.max(1, Math.min(n, 50));
+    for (let i = 0; i < n; i++){
+      setTimeout(() => spawnGolden(false), i * 350);
+    }
+    showToast(`🔧 Admin: spawnade ${n} Golden Bearnaise`);
+  });
+
+  document.getElementById('adminAddPrestigeBtn').addEventListener('click', () => {
+    const input = document.getElementById('adminPrestigeInput');
+    const n = parseInt(input.value, 10) || 0;
+    if (n > 0){
+      prestige += n;
+      recalcStats();
+      renderStats();
+      updateShopState();
+      saveGame();
+      showToast(`🔧 Admin: +${n} prestige-nivåer`);
+    }
+  });
+
+  document.getElementById('adminMaxUpgradesBtn').addEventListener('click', () => {
+    autoItems.forEach(i => i.owned += 100);
+    powerItems.forEach(i => i.owned += 100);
+    recalcStats();
+    renderStats();
+    updateShopState();
+    saveGame();
+    showToast('🔧 Admin: alla uppgraderingar +100');
+  });
+
+  document.getElementById('adminResetBtn').addEventListener('click', () => {
+    if (confirm('Nollställ all sparad data? Det går inte att ångra.')){
+      try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+      location.reload();
+    }
+  });
+
+  // --- Init ---
+  loadGame();
   recalcStats();
   renderStats();
   renderShop();
   renderAchievements();
   scheduleGolden();
+
+  setInterval(saveGame, 5000);
+  window.addEventListener('beforeunload', saveGame);
 </script>
 
 </body>
