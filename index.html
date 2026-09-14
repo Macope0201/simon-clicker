@@ -921,10 +921,29 @@
   restartCancelBtn.addEventListener('click', () => restartModalOverlay.classList.remove('visible'));
   restartModalOverlay.addEventListener('click', (e) => { if (e.target === restartModalOverlay) restartModalOverlay.classList.remove('visible'); });
 
-  restartConfirmBtn.addEventListener('click', () => {
+  function resetGame(){
+    clicks = 0;
+    totalClicksEarned = 0;
+    cps = 0;
+    clickPower = 1;
+    combo = 0;
+    clearTimeout(comboTimeout);
+    autoItems.forEach(i => i.owned = 0);
+    powerItems.forEach(i => i.owned = 0);
+    achievements.forEach(a => a.unlocked = false);
+
     try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
-    location.reload();
-  });
+
+    recalcStats();
+    renderStats();
+    renderShop();
+    renderAchievements();
+    updateComboUI();
+    restartModalOverlay.classList.remove('visible');
+    showToast('🔄 Spelet är återställt!');
+  }
+
+  restartConfirmBtn.addEventListener('click', resetGame);
 
   // --- Hemlig admin-åtkomst ---
   const secretWord = document.getElementById('secretWord');
@@ -996,8 +1015,8 @@
 
   document.getElementById('adminResetBtn').addEventListener('click', () => {
     if (confirm('Nollställ all sparad data? Det går inte att ångra.')){
-      try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
-      location.reload();
+      resetGame();
+      closeAdminModal();
     }
   });
 
